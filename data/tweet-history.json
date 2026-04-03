@@ -1,4 +1,13 @@
 {
-  "tweets": [],
-  "lastUpdated": ""
+  "tweets": [
+    {
+      "id": "1775185855249-r6h14d",
+      "content": "What's your go-to move when you arrive somewhere new? Wander aimlessly, hit the famous spots first, or ask locals for their secret recommendations?",
+      "contentType": "engagement_question",
+      "postedAt": "2026-04-03T03:10:55.249Z",
+      "tweetId": "2039903443431858188",
+      "season": "spring"
+    }
+  ],
+  "lastUpdated": "2026-04-03T03:10:55.250Z"
 }

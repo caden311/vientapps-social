@@ -1,6 +1,25 @@
 import { ContentType } from "./types";
 
-export const SITE_URL = "https://roamly.app";
+export const COMPANY_URL = "https://vientapps.com";
+export const ROAMLY_URL = "https://roamly.vientapps.com";
+
+export const PRODUCTS = [
+  {
+    name: "Roamly",
+    description: "Free AI-powered trip planner for solo travelers and groups",
+    url: "https://roamly.vientapps.com",
+  },
+  {
+    name: "Joke of the Day",
+    description: "Browser extension delivering daily humor",
+    url: "https://vientapps.com",
+  },
+  {
+    name: "Smoke or Fire",
+    description: "Mobile card game playable across devices",
+    url: "https://vientapps.com",
+  },
+];
 
 export const DESTINATIONS = [
   { name: "Las Vegas, Nevada", slug: "las-vegas-nevada" },
@@ -44,7 +63,7 @@ export const STYLE_TAGS = [
   "Active Sports",
 ];
 
-export const FEATURES = [
+export const ROAMLY_FEATURES = [
   "AI-powered day-by-day itineraries tailored to your group",
   "Private preference collection so everyone can be honest",
   "Date coordination that finds windows working for everyone",
@@ -63,12 +82,15 @@ export const PRICING = {
 export const CONTENT_TYPES: ContentType[] = [
   "travel_tip",
   "destination_highlight",
-  "feature_announcement",
+  "roamly_feature",
   "engagement_question",
   "travel_stat",
   "seasonal_content",
   "user_scenario",
   "planning_advice",
+  "indie_dev",
+  "product_highlight",
+  "building_in_public",
 ];
 
 export function getSeason(date: Date): string {

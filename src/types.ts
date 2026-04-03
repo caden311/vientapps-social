@@ -1,12 +1,15 @@
 export type ContentType =
   | "travel_tip"
   | "destination_highlight"
-  | "feature_announcement"
+  | "roamly_feature"
   | "engagement_question"
   | "travel_stat"
   | "seasonal_content"
   | "user_scenario"
-  | "planning_advice";
+  | "planning_advice"
+  | "indie_dev"
+  | "product_highlight"
+  | "building_in_public";
 
 export interface TweetRecord {
   id: string;

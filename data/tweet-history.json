@@ -39,7 +39,15 @@
       "postedAt": "2026-04-05T15:33:16.881Z",
       "tweetId": "2040815039616073792",
       "season": "spring"
+    },
+    {
+      "id": "1775490454402-99isly",
+      "content": "Just pushed a gnarly bug fix that was breaking Roamly's AI planning for groups over 8 people. Turns out I was concatenating preferences wrong and Claude was getting confused. 3am debugging sessions hit different when users are counting on you 🐛 #indiehackers #buildinpublic",
+      "contentType": "building_in_public",
+      "postedAt": "2026-04-06T15:47:34.402Z",
+      "tweetId": "2041181024852328679",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-04-05T15:33:16.881Z"
+  "lastUpdated": "2026-04-06T15:47:34.402Z"
 }

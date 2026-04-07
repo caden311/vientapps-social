@@ -5,11 +5,20 @@ import { addTweet } from "./history";
 import { getSeason } from "./constants";
 
 async function main() {
+  const dryRun = process.argv.includes("--dry-run");
+
   console.log("Generating tweet...");
   const generated = await generateTweet();
   console.log(`Content type: ${generated.contentType}`);
+  if (generated.blogSlug) console.log(`Blog post: ${generated.blogSlug}`);
+  if (generated.destination) console.log(`Destination: ${generated.destination}`);
   console.log(`Tweet: ${generated.content}`);
   console.log(`Length: ${generated.content.length}/280`);
+
+  if (dryRun) {
+    console.log("Dry run — skipping post and history update.");
+    return;
+  }
 
   console.log("Posting to X...");
   const tweetId = await postTweet(generated.content);

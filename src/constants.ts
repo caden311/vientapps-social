@@ -79,18 +79,23 @@ export const PRICING = {
   pro: "AI Pro+ at $15/month with Claude Opus",
 };
 
-export const CONTENT_TYPES: ContentType[] = [
-  "travel_tip",
-  "destination_highlight",
+// ~30% of posts
+export const ROAMLY_CONTENT_TYPES: ContentType[] = [
   "roamly_feature",
-  "engagement_question",
-  "travel_stat",
-  "seasonal_content",
-  "user_scenario",
-  "planning_advice",
-  "indie_dev",
-  "product_highlight",
-  "building_in_public",
+  "destination_highlight",
+];
+
+// ~70% of posts
+export const BLOG_CONTENT_TYPES: ContentType[] = [
+  "blog_new_post",
+  "blog_insight",
+  "blog_tech",
+  "blog_engagement",
+];
+
+export const CONTENT_TYPES: ContentType[] = [
+  ...ROAMLY_CONTENT_TYPES,
+  ...BLOG_CONTENT_TYPES,
 ];
 
 export function getSeason(date: Date): string {

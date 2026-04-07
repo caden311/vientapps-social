@@ -1,15 +1,12 @@
 export type ContentType =
-  | "travel_tip"
-  | "destination_highlight"
+  // Roamly bucket (~30%)
   | "roamly_feature"
-  | "engagement_question"
-  | "travel_stat"
-  | "seasonal_content"
-  | "user_scenario"
-  | "planning_advice"
-  | "indie_dev"
-  | "product_highlight"
-  | "building_in_public";
+  | "destination_highlight"
+  // Blog bucket (~70%)
+  | "blog_new_post"
+  | "blog_insight"
+  | "blog_tech"
+  | "blog_engagement";
 
 export interface TweetRecord {
   id: string;
@@ -18,6 +15,7 @@ export interface TweetRecord {
   postedAt: string;
   tweetId?: string;
   destination?: string;
+  blogSlug?: string;
   season: string;
 }
 
@@ -30,4 +28,5 @@ export interface GeneratedTweet {
   content: string;
   contentType: ContentType;
   destination?: string;
+  blogSlug?: string;
 }

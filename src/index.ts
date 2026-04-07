@@ -23,6 +23,7 @@ async function main() {
     postedAt: new Date().toISOString(),
     tweetId,
     destination: generated.destination,
+    blogSlug: generated.blogSlug,
     season: getSeason(new Date()),
   });
 

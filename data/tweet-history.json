@@ -47,7 +47,15 @@
       "postedAt": "2026-04-06T15:47:34.402Z",
       "tweetId": "2041181024852328679",
       "season": "spring"
+    },
+    {
+      "id": "1775578204770-39m5n9",
+      "content": "The hardest part about building Roamly isn't the AI or the date coordination logic. It's deciding which features NOT to build. Users suggest amazing ideas daily but every yes is a thousand nos to something else #indiehackers #buildinpublic",
+      "contentType": "indie_dev",
+      "postedAt": "2026-04-07T16:10:04.770Z",
+      "tweetId": "2041549076517314757",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-04-06T15:47:34.402Z"
+  "lastUpdated": "2026-04-07T16:10:04.770Z"
 }

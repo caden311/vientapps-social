@@ -55,7 +55,16 @@
       "postedAt": "2026-04-07T16:10:04.770Z",
       "tweetId": "2041549076517314757",
       "season": "spring"
+    },
+    {
+      "id": "1775592484642-ye5km3",
+      "content": "Building a YouTube Short generator taught me that AI tools work best when you treat them like specialized contractors, not magic boxes. Claude writes scripts, Fal generates images, ElevenLabs does voiceover. Each does one thing well. #ai #buildinpublic #devlog",
+      "contentType": "blog_insight",
+      "postedAt": "2026-04-07T20:08:04.642Z",
+      "tweetId": "2041608970545062005",
+      "blogSlug": "generating-youtube-shorts-with-ai",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-04-07T16:10:04.770Z"
+  "lastUpdated": "2026-04-07T20:08:04.642Z"
 }

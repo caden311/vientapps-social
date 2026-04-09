@@ -73,7 +73,16 @@
       "tweetId": "2041912714206048440",
       "destination": "porto-portugal",
       "season": "spring"
+    },
+    {
+      "id": "1775751461784-ksj4fs",
+      "content": "When you rebuild a client's site from scratch after an AI builder fails them, do you eat the extra hours or charge for the lesson learned? Asking for a friend who just spent 20 hours undoing vendor lock-in 😅 #webdev #indiehackers #clientwork",
+      "contentType": "blog_engagement",
+      "postedAt": "2026-04-09T16:17:41.784Z",
+      "tweetId": "2042275769158607353",
+      "blogSlug": "moving-griffin-renovation-off-landingsite",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-04-08T16:15:02.728Z"
+  "lastUpdated": "2026-04-09T16:17:41.784Z"
 }

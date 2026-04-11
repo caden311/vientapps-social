@@ -90,7 +90,16 @@
       "postedAt": "2026-04-10T15:54:04.574Z",
       "tweetId": "2042632212789477651",
       "season": "spring"
+    },
+    {
+      "id": "1775921641431-06t8x0",
+      "content": "Paper trading my Trump Truth Social bot worked flawlessly. Real markets? Different story. Turns out the 3-second delay between RSS feed → Claude analysis → trade execution meant I was always buying the top of moves that lasted 30 seconds 📉 #ai #trading #devlog",
+      "contentType": "blog_tech",
+      "postedAt": "2026-04-11T15:34:01.431Z",
+      "tweetId": "2042989554353762603",
+      "blogSlug": "building-trump-trader",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-04-10T15:54:04.574Z"
+  "lastUpdated": "2026-04-11T15:34:01.431Z"
 }

@@ -108,7 +108,16 @@
       "tweetId": "2043352468004696455",
       "blogSlug": "building-packsmart",
       "season": "spring"
+    },
+    {
+      "id": "1776182875660-r5tk2g",
+      "content": "Ever shipped something simple that unexpectedly took off? My joke extension started as \"I want a clean joke in new tabs\" and somehow 4,600 people installed it. What's your accidental success story? #indiehackers #chromeextension #buildinpublic",
+      "contentType": "blog_engagement",
+      "postedAt": "2026-04-14T16:07:55.660Z",
+      "tweetId": "2044085250129551827",
+      "blogSlug": "building-joke-of-the-day",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-04-12T15:36:06.882Z"
+  "lastUpdated": "2026-04-14T16:07:55.660Z"
 }

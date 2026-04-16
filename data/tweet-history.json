@@ -125,7 +125,16 @@
       "postedAt": "2026-04-15T16:05:07.109Z",
       "tweetId": "2044446930831302925",
       "season": "spring"
+    },
+    {
+      "id": "1776356582394-g5kztt",
+      "content": "jsPDF for media kit generation was the wrong choice. 60-second render times, layout nightmares, and memory leaks with images. Should've gone with Puppeteer + HTML/CSS from day one. Sometimes the boring solution is the right one 🤦‍♂️ #webdev #typescript #devlog",
+      "contentType": "blog_tech",
+      "postedAt": "2026-04-16T16:23:02.394Z",
+      "tweetId": "2044813828928504303",
+      "blogSlug": "building-creatorkit",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-04-15T16:05:07.109Z"
+  "lastUpdated": "2026-04-16T16:23:02.394Z"
 }

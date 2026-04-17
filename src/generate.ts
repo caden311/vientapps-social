@@ -25,8 +25,8 @@ const client = new Anthropic();
 function pickContentType(): ContentType {
   const dist = getContentTypeDistribution();
 
-  // 70% chance blog, 30% chance roamly
-  const useBlog = Math.random() < 0.7;
+  // 90% chance blog, 10% chance roamly
+  const useBlog = Math.random() < 0.9;
   const pool = useBlog ? BLOG_CONTENT_TYPES : ROAMLY_CONTENT_TYPES;
 
   const totalRecent = pool.reduce((sum, t) => sum + (dist[t] || 0), 0);
@@ -108,10 +108,10 @@ Roamly details (for Roamly tweets):
 Content type guidelines:
 - roamly_feature: Highlight a specific Roamly feature or capability. Concrete, specific, not generic.
 - destination_highlight: Vivid take on a specific destination Roamly covers. Make it feel real, not tourism copy.
-- blog_new_post: Drive traffic to a specific blog post. Lead with the most interesting hook from the post, not just the title.
-- blog_insight: Share a specific insight, decision, or lesson from a blog post. Could be a technical choice, a failure, a surprising result.
-- blog_tech: Highlight a specific technical thing discussed in a post — a library, a pattern, a trick, a problem that took too long to solve.
-- blog_engagement: Ask a genuine question inspired by something from the blog. Easy to reply to. Not rhetorical.
+- blog_new_post: Lead with a contrarian take or specific number pulled from the post (not just the title). Then give readers one thing they can act on right now. End with the post URL.
+- blog_insight: Name the insight with a number or a framework label (e.g. "The X rule", "3 reasons why"). Then hand the reader the takeaway as a concrete, usable rule or action they can apply today.
+- blog_tech: Open with a specific, counter-intuitive technical claim. Then give one command, pattern, or decision the reader can use immediately.
+- blog_engagement: Ask a pointed question framed around a number or named concept. Not rhetorical. Should make readers want to reply with their own answer.
 
 Growth strategy (building from zero followers, discoverability matters):
 - Include 2-3 relevant hashtags per tweet. Pick from: #indiehackers #buildinpublic #webdev #typescript #reactnative #nextjs #ai #solodev #saas #devlog #gamedev #chromeextension #indiedev
@@ -125,6 +125,7 @@ Rules:
 - Never repeat or closely paraphrase any tweet from the history provided
 - Vary your sentence structure and opening words
 - Make it specific. Vague = boring. Specific = shareable.
+- For blog tweets: lead with a contrarian claim, a specific number, or a named framework. Then give the reader one immediately usable tool, tip, or decision. Every blog tweet = insight + action.
 - Occasionally use 1-2 relevant emojis, but don't overdo it
 - Never use em dashes
 - Keep it authentic, not corporate`;

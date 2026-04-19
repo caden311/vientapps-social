@@ -152,7 +152,16 @@
       "tweetId": "2045527073125777742",
       "destination": "charleston-south-carolina",
       "season": "spring"
+    },
+    {
+      "id": "1776613043324-83rtjd",
+      "content": "Claude Code's `/usage` and `/context` break flow when you check them constantly. Built a bash statusline showing rate limits, context window, and reset timer as progress bars on every prompt. One glance = full picture 📊 #buildinpublic #claude #bash",
+      "contentType": "blog_tech",
+      "postedAt": "2026-04-19T15:37:23.324Z",
+      "tweetId": "2045889504028819558",
+      "blogSlug": "building-a-claude-code-statusline",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-04-18T15:37:13.044Z"
+  "lastUpdated": "2026-04-19T15:37:23.324Z"
 }

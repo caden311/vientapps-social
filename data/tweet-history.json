@@ -161,7 +161,16 @@
       "tweetId": "2045889504028819558",
       "blogSlug": "building-a-claude-code-statusline",
       "season": "spring"
+    },
+    {
+      "id": "1776701394032-whtyv0",
+      "content": "Most SEO tools check if Google can crawl you. None check if ChatGPT can find you when users ask about your product. Built ShipReady to audit for answer engines. Check if your robots.txt blocks GPTBot right now https://vientapps.com/blog/building-shipready #seo #ai #buildinpublic",
+      "contentType": "blog_new_post",
+      "postedAt": "2026-04-20T16:09:54.032Z",
+      "tweetId": "2046260073698078995",
+      "blogSlug": "building-shipready",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-04-19T15:37:23.324Z"
+  "lastUpdated": "2026-04-20T16:09:54.032Z"
 }

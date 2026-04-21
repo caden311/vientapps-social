@@ -170,7 +170,16 @@
       "tweetId": "2046260073698078995",
       "blogSlug": "building-shipready",
       "season": "spring"
+    },
+    {
+      "id": "1776787819865-ro1zo1",
+      "content": "The 3-Hour Rule: If your multiplayer game idea takes more than 3 hours to explain the technical architecture, you're overthinking it. Firebase arrays, real-time sync, turn management - keep it simple or players bounce before the fun starts #gamedev #reactnative #buildinpublic",
+      "contentType": "blog_insight",
+      "postedAt": "2026-04-21T16:10:19.865Z",
+      "tweetId": "2046622570007425228",
+      "blogSlug": "building-smoke-or-fire",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-04-20T16:09:54.032Z"
+  "lastUpdated": "2026-04-21T16:10:19.865Z"
 }

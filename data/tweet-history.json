@@ -179,7 +179,16 @@
       "tweetId": "2046622570007425228",
       "blogSlug": "building-smoke-or-fire",
       "season": "spring"
+    },
+    {
+      "id": "1776874119595-bz11sc",
+      "content": "AI builders get you 80% there in minutes, but fixing that last 20% costs more than building from scratch. Spent 6 hours undoing LandingSite.ai's mess, rebuilt clean in 2 with Astro.",
+      "contentType": "blog_new_post",
+      "postedAt": "2026-04-22T16:08:39.595Z",
+      "tweetId": "2046984537167614347",
+      "blogSlug": "building-griffin-renovation",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-04-21T16:10:19.865Z"
+  "lastUpdated": "2026-04-22T16:08:39.595Z"
 }

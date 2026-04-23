@@ -188,7 +188,16 @@
       "tweetId": "2046984537167614347",
       "blogSlug": "building-griffin-renovation",
       "season": "spring"
+    },
+    {
+      "id": "1776961699570-l2e7kk",
+      "content": "Claude Code on Bedrock blocks microphone access for security but I type at 20 WPM. Built a dead simple iOS app: tap button, speak, text hits clipboard instantly. One paste vs minutes of hunting-and-pecking #buildinpublic #reactnative #speechrecognition",
+      "contentType": "blog_tech",
+      "postedAt": "2026-04-23T16:28:19.570Z",
+      "tweetId": "2047351874366378066",
+      "blogSlug": "building-mic-clipboard",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-04-22T16:08:39.595Z"
+  "lastUpdated": "2026-04-23T16:28:19.570Z"
 }

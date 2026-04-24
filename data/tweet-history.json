@@ -197,7 +197,16 @@
       "tweetId": "2047351874366378066",
       "blogSlug": "building-mic-clipboard",
       "season": "spring"
+    },
+    {
+      "id": "1777046674901-scrn79",
+      "content": "BurnRate worked perfectly until I realized the API keys it needed could drain your account with one bad call. Security > convenience. Build the simple version first: spreadsheet tracking https://vientapps.com/blog/shelving-burnrate #buildinpublic #indiehackers #api",
+      "contentType": "blog_new_post",
+      "postedAt": "2026-04-24T16:04:34.901Z",
+      "tweetId": "2047708286615486769",
+      "blogSlug": "shelving-burnrate",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-04-23T16:28:19.570Z"
+  "lastUpdated": "2026-04-24T16:04:34.901Z"
 }

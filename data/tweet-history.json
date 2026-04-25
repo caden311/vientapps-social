@@ -206,7 +206,16 @@
       "tweetId": "2047708286615486769",
       "blogSlug": "shelving-burnrate",
       "season": "spring"
+    },
+    {
+      "id": "1777131549138-j84809",
+      "content": "Carrier-specific bag limits aren't edge cases - they're the problem. Built size checkers with orientation-agnostic math: your 22x14x9 bag fits Delta vertically but Ryanair horizontally. One JSON, 50 airlines, zero €55 surprises #typescript #travel #buildinpublic",
+      "contentType": "blog_tech",
+      "postedAt": "2026-04-25T15:39:09.138Z",
+      "tweetId": "2048064274975822312",
+      "blogSlug": "building-airline-size-checkers",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-04-24T16:04:34.901Z"
+  "lastUpdated": "2026-04-25T15:39:09.139Z"
 }

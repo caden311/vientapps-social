@@ -224,7 +224,16 @@
       "tweetId": "2048427277810102460",
       "blogSlug": "building-roamly",
       "season": "spring"
+    },
+    {
+      "id": "1777307178113-zcs14i",
+      "content": "The 6-Decision Rule: When stuck on design direction, give AI exactly 6 \"decide for me\" constraints and ship whatever it builds. Claude turned my static homepage into animated flight paths in one conversation.",
+      "contentType": "blog_insight",
+      "postedAt": "2026-04-27T16:26:18.113Z",
+      "tweetId": "2048800916279599529",
+      "blogSlug": "designing-homepage-hero-with-claude",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-04-26T15:41:35.734Z"
+  "lastUpdated": "2026-04-27T16:26:18.114Z"
 }

@@ -242,7 +242,16 @@
       "tweetId": "2049169582066487720",
       "blogSlug": "forbes-mentioned-our-carry-on-tools",
       "season": "spring"
+    },
+    {
+      "id": "1777480048549-mlkxfe",
+      "content": "iframe widgets seem simple until airlines change their bag rules and your embed breaks on 500 travel blogs. Built the carry-on checker with JSON configs so one update fixes everywhere. Separation of data from display = fewer 3am panic fixes 🎒 #webdev #astro #buildinpublic",
+      "contentType": "blog_tech",
+      "postedAt": "2026-04-29T16:27:28.549Z",
+      "tweetId": "2049525987499544919",
+      "blogSlug": "building-embeddable-carry-on-widget",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-04-28T16:51:14.850Z"
+  "lastUpdated": "2026-04-29T16:27:28.549Z"
 }

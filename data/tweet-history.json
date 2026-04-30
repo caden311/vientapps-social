@@ -251,7 +251,16 @@
       "tweetId": "2049525987499544919",
       "blogSlug": "building-embeddable-carry-on-widget",
       "season": "spring"
+    },
+    {
+      "id": "1777565933334-fl0pyq",
+      "content": "When you build a travel widget, do you optimize for the 80% case (basic fees) or the 20% edge case (overweight surcharges, third bags, size limits)? My checked bag calculator handles all of it - curious what tradeoffs you make in your tools? #webdev #buildinpublic #travel",
+      "contentType": "blog_engagement",
+      "postedAt": "2026-04-30T16:18:53.334Z",
+      "tweetId": "2049886214447124544",
+      "blogSlug": "building-checked-bag-fee-widget",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-04-29T16:27:28.549Z"
+  "lastUpdated": "2026-04-30T16:18:53.334Z"
 }

@@ -260,7 +260,16 @@
       "tweetId": "2049886214447124544",
       "blogSlug": "building-checked-bag-fee-widget",
       "season": "spring"
+    },
+    {
+      "id": "1777651036363-rubwja",
+      "content": "Most devs skip locale-aware date parsing until users start complaining about \"invalid date\" errors. `new Date('2026-04-30')` breaks in different timezones. Use `date-fns/parseISO` instead - handles ISO strings consistently everywhere #webdev #javascript #buildinpublic",
+      "contentType": "blog_tech",
+      "postedAt": "2026-05-01T15:57:16.363Z",
+      "tweetId": "2050243162426183866",
+      "blogSlug": "67-destinations-august-crowd-test-2026",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-04-30T16:18:53.334Z"
+  "lastUpdated": "2026-05-01T15:57:16.364Z"
 }

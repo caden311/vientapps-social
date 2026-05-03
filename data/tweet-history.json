@@ -278,7 +278,16 @@
       "tweetId": "2050602600689537059",
       "destination": "bali-indonesia",
       "season": "spring"
+    },
+    {
+      "id": "1777823238757-b33a9s",
+      "content": "What's the most annoying layover experience you've had because of bad terminal transfer info? I just built a calculator that knows every JFK terminal-to-terminal walk time after getting burned by a 45-minute \"5-minute\" connection myself #travel #webdev #buildinpublic",
+      "contentType": "blog_engagement",
+      "postedAt": "2026-05-03T15:47:18.757Z",
+      "tweetId": "2050965431683563620",
+      "blogSlug": "building-connection-time-calculator",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-05-02T15:45:33.124Z"
+  "lastUpdated": "2026-05-03T15:47:18.757Z"
 }

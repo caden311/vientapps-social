@@ -296,7 +296,16 @@
       "tweetId": "2051342504864387345",
       "blogSlug": "75-airline-personal-item-trap-2026",
       "season": "spring"
+    },
+    {
+      "id": "1777998252976-knbifd",
+      "content": "When you're building a puzzle generator, what's harder: creating the algorithm that makes valid puzzles or the one that makes puzzles actually fun to solve? Spent 3 weeks on SumTrails learning they're totally different problems #gamedev #reactnative #buildinpublic",
+      "contentType": "blog_engagement",
+      "postedAt": "2026-05-05T16:24:12.976Z",
+      "tweetId": "2051699494429786197",
+      "blogSlug": "building-sumtrails",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-05-04T16:45:40.026Z"
+  "lastUpdated": "2026-05-05T16:24:12.976Z"
 }

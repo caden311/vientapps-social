@@ -332,7 +332,16 @@
       "tweetId": "2052783787885380093",
       "blogSlug": "only-building-dead-simple-apps",
       "season": "spring"
+    },
+    {
+      "id": "1778341933268-t45o5y",
+      "content": "15 countries accept US plugs but run 230V that'll fry your 110V hair dryer. Thailand, Vietnam, Philippines look \"compatible\" until you smell burning electronics. Check voltage labels first https://vientapps.com/blog/15-countries-us-plug-fits-voltage-doesnt #travel #buildinpublic",
+      "contentType": "blog_new_post",
+      "postedAt": "2026-05-09T15:52:13.268Z",
+      "tweetId": "2053140993948405910",
+      "blogSlug": "15-countries-us-plug-fits-voltage-doesnt",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-05-08T16:12:48.673Z"
+  "lastUpdated": "2026-05-09T15:52:13.268Z"
 }

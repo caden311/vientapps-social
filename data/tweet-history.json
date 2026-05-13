@@ -367,7 +367,16 @@
       "postedAt": "2026-05-12T17:11:16.779Z",
       "tweetId": "2054248053389869288",
       "season": "spring"
+    },
+    {
+      "id": "1778692571207-1zo4gp",
+      "content": "The Automation Paradox: Spent 6 hours building a WoW addon to save 5 seconds per portal request. Classic programmer move - solve a 30-second problem with 3 days of Lua wrestling. Sometimes inefficiency is the whole point #gamedev #lua #buildinpublic",
+      "contentType": "blog_insight",
+      "postedAt": "2026-05-13T17:16:11.207Z",
+      "tweetId": "2054611676234994161",
+      "blogSlug": "building-mage-portals",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-05-12T17:11:16.780Z"
+  "lastUpdated": "2026-05-13T17:16:11.207Z"
 }

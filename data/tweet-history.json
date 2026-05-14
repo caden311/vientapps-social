@@ -376,7 +376,16 @@
       "tweetId": "2054611676234994161",
       "blogSlug": "building-mage-portals",
       "season": "spring"
+    },
+    {
+      "id": "1778778060848-paatoa",
+      "content": "Paper trading an AI bot that reads Truth Social? Perfect results. Real markets with 200ms latency? Lost money faster than a JavaScript memory leak. Rule: backtest with real API delays, not localhost dreams #python #trading #buildinpublic",
+      "contentType": "blog_tech",
+      "postedAt": "2026-05-14T17:01:00.848Z",
+      "tweetId": "2054970245736284209",
+      "blogSlug": "building-trump-trader",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-05-13T17:16:11.207Z"
+  "lastUpdated": "2026-05-14T17:01:00.849Z"
 }

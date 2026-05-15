@@ -385,7 +385,16 @@
       "tweetId": "2054970245736284209",
       "blogSlug": "building-trump-trader",
       "season": "spring"
+    },
+    {
+      "id": "1778863885631-x55j6j",
+      "content": "AI builders promise \"full control\" until you need custom schema markup. LandingSite handled meta tags but locked me out of local SEO. Rebuilt Griffin Renovation in vanilla HTML + Tailwind in 2 hours.",
+      "contentType": "blog_tech",
+      "postedAt": "2026-05-15T16:51:25.631Z",
+      "tweetId": "2055330220920431088",
+      "blogSlug": "moving-griffin-renovation-off-landingsite",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-05-14T17:01:00.849Z"
+  "lastUpdated": "2026-05-15T16:51:25.632Z"
 }

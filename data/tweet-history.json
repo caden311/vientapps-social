@@ -394,7 +394,16 @@
       "tweetId": "2055330220920431088",
       "blogSlug": "moving-griffin-renovation-off-landingsite",
       "season": "spring"
+    },
+    {
+      "id": "1778947099221-np9p09",
+      "content": "When building AI tools that need to output structured data, do you validate the JSON before using it or just pray the LLM followed instructions? PackSmart taught me hard lessons about Claude occasionally forgetting closing brackets mid-packing list 🎒 #webdev #ai #buildinpublic",
+      "contentType": "blog_engagement",
+      "postedAt": "2026-05-16T15:58:19.221Z",
+      "tweetId": "2055679244026421725",
+      "blogSlug": "building-packsmart",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-05-15T16:51:25.632Z"
+  "lastUpdated": "2026-05-16T15:58:19.221Z"
 }

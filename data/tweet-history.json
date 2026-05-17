@@ -403,7 +403,16 @@
       "tweetId": "2055679244026421725",
       "blogSlug": "building-packsmart",
       "season": "spring"
+    },
+    {
+      "id": "1779033546993-i476rm",
+      "content": "Most subscription tools solve fake problems. Creator needed a media kit PDF, losing brand deals. Built CreatorKit: free, no signup, 60-second generation. Zero usage = shelved https://vientapps.com/blog/building-creatorkit #buildinpublic #indiehackers",
+      "contentType": "blog_new_post",
+      "postedAt": "2026-05-17T15:59:06.993Z",
+      "tweetId": "2056041832111292825",
+      "blogSlug": "building-creatorkit",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-05-16T15:58:19.221Z"
+  "lastUpdated": "2026-05-17T15:59:06.993Z"
 }

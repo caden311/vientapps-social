@@ -430,7 +430,16 @@
       "tweetId": "2056791426873356702",
       "destination": "tbilisi-georgia",
       "season": "spring"
+    },
+    {
+      "id": "1779299638323-2g5hwr",
+      "content": "Most devs think \"automated content\" means spam. I built a YouTube Shorts pipeline: text script → finished video using Claude + FFmpeg. Weekend project, real costs https://vientapps.com/blog/generating-youtube-shorts-with-ai #ai #typescript #buildinpublic",
+      "contentType": "blog_new_post",
+      "postedAt": "2026-05-20T17:53:58.323Z",
+      "tweetId": "2057157900154364162",
+      "blogSlug": "generating-youtube-shorts-with-ai",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-05-19T17:37:44.288Z"
+  "lastUpdated": "2026-05-20T17:53:58.323Z"
 }

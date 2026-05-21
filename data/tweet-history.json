@@ -439,7 +439,16 @@
       "tweetId": "2057157900154364162",
       "blogSlug": "generating-youtube-shorts-with-ai",
       "season": "spring"
+    },
+    {
+      "id": "1779384640742-0sipv5",
+      "content": "Lighthouse gives perfect SEO scores while ChatGPT has never heard of your site. Built ShipReady to audit what matters: GPTBot access, llms.txt, answer engine structure.",
+      "contentType": "blog_new_post",
+      "postedAt": "2026-05-21T17:30:40.742Z",
+      "tweetId": "2057514426186494073",
+      "blogSlug": "building-shipready",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-05-20T17:53:58.323Z"
+  "lastUpdated": "2026-05-21T17:30:40.743Z"
 }

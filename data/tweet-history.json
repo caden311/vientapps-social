@@ -448,7 +448,16 @@
       "tweetId": "2057514426186494073",
       "blogSlug": "building-shipready",
       "season": "spring"
+    },
+    {
+      "id": "1779469684383-y4oa29",
+      "content": "The 60-Second Visibility Rule: Your Claude Code session limits are invisible until they hit. Built /statusline to show usage bars, context window, and 5-hour reset timer in every prompt. One bash command saves hours of surprise cooldowns #buildinpublic #claude #devlog",
+      "contentType": "blog_insight",
+      "postedAt": "2026-05-22T17:08:04.383Z",
+      "tweetId": "2057871124953022470",
+      "blogSlug": "building-a-claude-code-statusline",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-05-21T17:30:40.743Z"
+  "lastUpdated": "2026-05-22T17:08:04.384Z"
 }

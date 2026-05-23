@@ -457,7 +457,16 @@
       "tweetId": "2057871124953022470",
       "blogSlug": "building-a-claude-code-statusline",
       "season": "spring"
+    },
+    {
+      "id": "1779552096712-dbbmxs",
+      "content": "When you need a client site live in hours, do you reach for AI builders like LandingSite or stick with hand-coded solutions? Just shipped Griffin Renovation in an afternoon but hit real limits when they wanted custom schema markup #webdev #ai #buildinpublic",
+      "contentType": "blog_engagement",
+      "postedAt": "2026-05-23T16:01:36.712Z",
+      "tweetId": "2058216787448152089",
+      "blogSlug": "building-griffin-renovation",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-05-22T17:08:04.384Z"
+  "lastUpdated": "2026-05-23T16:01:36.712Z"
 }

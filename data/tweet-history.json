@@ -466,7 +466,16 @@
       "tweetId": "2058216787448152089",
       "blogSlug": "building-griffin-renovation",
       "season": "spring"
+    },
+    {
+      "id": "1779638448416-9ug457",
+      "content": "Voice transcription isn't \"AI magic\" until you need it working offline with 99% accuracy. Built Mic to Clipboard with iOS Speech Framework - zero API calls, instant results. `SFSpeechRecognizer().recognitionTask()` beats cloud services every time #reactnative #ios #buildinpublic",
+      "contentType": "blog_tech",
+      "postedAt": "2026-05-24T16:00:48.416Z",
+      "tweetId": "2058578972678795511",
+      "blogSlug": "building-mic-clipboard",
+      "season": "spring"
     }
   ],
-  "lastUpdated": "2026-05-23T16:01:36.712Z"
+  "lastUpdated": "2026-05-24T16:00:48.417Z"
 }

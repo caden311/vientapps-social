@@ -1,101 +1,51 @@
 import { ContentType } from "./types";
 
-export const COMPANY_URL = "https://vientapps.com";
-export const ROAMLY_URL = "https://roamly.vientapps.com";
+// Public site where the travel guides and destination pages live.
+export const SITE_URL = "https://travelvient.com";
 
-export const PRODUCTS = [
-  {
-    name: "Roamly",
-    description: "Free AI-powered trip planner for solo travelers and groups",
-    url: "https://roamly.vientapps.com",
-  },
-  {
-    name: "Joke of the Day",
-    description: "Browser extension delivering daily humor",
-    url: "https://vientapps.com",
-  },
-  {
-    name: "Smoke or Fire",
-    description: "Mobile card game playable across devices",
-    url: "https://vientapps.com",
-  },
+// Share of tweets drawn from the practical travel guides vs. destination pages.
+export const GUIDE_SOURCE_WEIGHT = 0.85;
+
+// Travel-growth hashtags. The model picks 2-3 per tweet, matched to the topic.
+export const TRAVEL_HASHTAGS = [
+  "#travel",
+  "#traveltips",
+  "#budgettravel",
+  "#solotravel",
+  "#wanderlust",
+  "#carryon",
+  "#packinglight",
+  "#airtravel",
+  "#cruise",
+  "#digitalnomad",
+  "#travelhacks",
+  "#bucketlist",
+  "#travelgram",
+  "#familytravel",
 ];
 
-export const DESTINATIONS = [
-  { name: "Las Vegas, Nevada", slug: "las-vegas-nevada" },
-  { name: "Oaxaca, Mexico", slug: "oaxaca-mexico" },
-  { name: "Tbilisi, Georgia", slug: "tbilisi-georgia" },
-  { name: "Medellin, Colombia", slug: "medellin-colombia" },
-  { name: "Lisbon, Portugal", slug: "lisbon-portugal" },
-  { name: "Marrakech, Morocco", slug: "marrakech-morocco" },
-  { name: "Kyoto, Japan", slug: "kyoto-japan" },
-  { name: "Nashville, Tennessee", slug: "nashville-tennessee" },
-  { name: "Savannah, Georgia", slug: "savannah-georgia" },
-  { name: "Asheville, North Carolina", slug: "asheville-north-carolina" },
-  { name: "Scottsdale, Arizona", slug: "scottsdale-arizona" },
-  { name: "Park City, Utah", slug: "park-city-utah" },
-  { name: "New Orleans, Louisiana", slug: "new-orleans-louisiana" },
-  { name: "Cartagena, Colombia", slug: "cartagena-colombia" },
-  { name: "San Diego, California", slug: "san-diego-california" },
-  { name: "Sedona, Arizona", slug: "sedona-arizona" },
-  { name: "Tulum, Mexico", slug: "tulum-mexico" },
-  { name: "Porto, Portugal", slug: "porto-portugal" },
-  { name: "Seville, Spain", slug: "seville-spain" },
-  { name: "Budapest, Hungary", slug: "budapest-hungary" },
-  { name: "Dubrovnik, Croatia", slug: "dubrovnik-croatia" },
-  { name: "Mexico City, Mexico", slug: "mexico-city-mexico" },
-  { name: "Chiang Mai, Thailand", slug: "chiang-mai-thailand" },
-  { name: "Bali, Indonesia", slug: "bali-indonesia" },
-  { name: "Cape Town, South Africa", slug: "cape-town-south-africa" },
-  { name: "Charleston, South Carolina", slug: "charleston-south-carolina" },
-  { name: "Buenos Aires, Argentina", slug: "buenos-aires-argentina" },
+// Guide bucket (~85% of tweets), sourced from the MDX travel guides.
+export const GUIDE_CONTENT_TYPES: ContentType[] = [
+  "guide_quick_answer",
+  "guide_bullet_fact",
+  "guide_faq",
+  "guide_engagement",
 ];
 
-export const STYLE_TAGS = [
-  "Beach",
-  "Cultural",
-  "Nightlife",
-  "Nature",
-  "Food & Culinary",
-  "Shopping",
-  "Historical",
-  "Wellness & Spa",
-  "Active Sports",
+// Destination bucket (~15% of tweets), sourced from the destination JSON.
+export const DESTINATION_CONTENT_TYPES: ContentType[] = [
+  "destination_spotlight",
+  "destination_budget",
+  "destination_best_time",
+  "destination_culture",
+  "destination_logistics",
+  "destination_engagement",
 ];
 
-export const ROAMLY_FEATURES = [
-  "AI-powered day-by-day itineraries tailored to your group",
-  "Private preference collection so everyone can be honest",
-  "Date coordination that finds windows working for everyone",
-  "Budget-aware planning that fits the whole group's range",
-  "No-go zones to automatically exclude places you don't want",
-  "Real-time collaboration to see preferences update live",
-  "Style preferences like Beach, Cultural, Nightlife, Nature, and more",
-];
-
-export const PRICING = {
-  free: "Free tier with AI Basic (Claude Haiku)",
-  plus: "AI+ at $5/month with Claude Sonnet",
-  pro: "AI Pro+ at $15/month with Claude Opus",
-};
-
-// ~30% of posts
-export const ROAMLY_CONTENT_TYPES: ContentType[] = [
-  "roamly_feature",
-  "destination_highlight",
-];
-
-// ~70% of posts
-export const BLOG_CONTENT_TYPES: ContentType[] = [
-  "blog_new_post",
-  "blog_insight",
-  "blog_tech",
-  "blog_engagement",
-];
-
+// Full set, used only for the distribution block shown to the model.
 export const CONTENT_TYPES: ContentType[] = [
-  ...ROAMLY_CONTENT_TYPES,
-  ...BLOG_CONTENT_TYPES,
+  ...GUIDE_CONTENT_TYPES,
+  ...DESTINATION_CONTENT_TYPES,
 ];
 
 export function getSeason(date: Date): string {
@@ -109,13 +59,13 @@ export function getSeason(date: Date): string {
 export function getSeasonalContext(season: string): string {
   switch (season) {
     case "spring":
-      return "Spring break trips, cherry blossoms in Kyoto, shoulder season in Europe, outdoor adventures warming up, festival season starting";
+      return "Spring break and shoulder-season travel, cherry blossoms and festivals, milder weather and thinner crowds, outdoor trips warming up";
     case "summer":
-      return "Beach getaways, family vacations, peak travel season, long days for sightseeing, tropical destinations in dry season";
+      return "Peak travel season, beach and family getaways, long daylight for sightseeing, higher prices and bigger crowds, tropical dry seasons";
     case "fall":
-      return "Fall foliage trips, off-season deals in Europe, harvest festivals, cooler weather hiking, shoulder season savings";
+      return "Fall foliage trips, off-season deals as crowds thin, harvest and food festivals, comfortable hiking weather, shoulder-season savings";
     case "winter":
-      return "Holiday travel, ski trips to Park City, tropical escapes from the cold, New Year getaways, cozy cultural city trips";
+      return "Holiday and New Year travel, ski and snow trips, tropical escapes from the cold, cozy city breaks, festive markets";
     default:
       return "";
   }

@@ -1,14 +1,10 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { GeneratedTweet, ContentType } from "./types";
+import { GeneratedTweet, ContentType, Source } from "./types";
 import {
-  DESTINATIONS,
-  ROAMLY_FEATURES,
-  PRICING,
-  STYLE_TAGS,
-  COMPANY_URL,
-  ROAMLY_URL,
-  ROAMLY_CONTENT_TYPES,
-  BLOG_CONTENT_TYPES,
+  TRAVEL_HASHTAGS,
+  GUIDE_SOURCE_WEIGHT,
+  GUIDE_CONTENT_TYPES,
+  DESTINATION_CONTENT_TYPES,
   CONTENT_TYPES,
   getSeason,
   getSeasonalContext,
@@ -18,24 +14,28 @@ import {
   getContentTypeDistribution,
   getRecentDestinations,
 } from "./history";
-import { loadBlogPosts, formatPostsForPrompt, BlogPost } from "./blog";
+import { loadGuides, pickFreshGuide, extractGuideSlice } from "./guides";
+import {
+  loadDestinations,
+  pickFreshDestination,
+  extractDestinationSlice,
+} from "./destinations";
 
 const client = new Anthropic();
 
-function pickContentType(): ContentType {
+function pickSource(): Source {
+  return Math.random() < GUIDE_SOURCE_WEIGHT ? "guide" : "destination";
+}
+
+function pickContentType(pool: ContentType[]): ContentType {
   const dist = getContentTypeDistribution();
-
-  // 90% chance blog, 10% chance roamly
-  const useBlog = Math.random() < 0.9;
-  const pool = useBlog ? BLOG_CONTENT_TYPES : ROAMLY_CONTENT_TYPES;
-
   const totalRecent = pool.reduce((sum, t) => sum + (dist[t] || 0), 0);
 
   if (totalRecent === 0) {
     return pool[Math.floor(Math.random() * pool.length)];
   }
 
-  // Weight toward underrepresented types within the chosen bucket
+  // Weight toward underrepresented types within the chosen pool.
   const weights = pool.map((type) => {
     const count = dist[type] || 0;
     return Math.max(1, totalRecent - count * 2);
@@ -50,110 +50,87 @@ function pickContentType(): ContentType {
   return pool[0];
 }
 
-function pickFreshDestination(): (typeof DESTINATIONS)[0] | null {
-  const recent = getRecentDestinations();
-  const fresh = DESTINATIONS.filter((d) => !recent.includes(d.slug));
-  const pool = fresh.length > 0 ? fresh : DESTINATIONS;
-  return pool[Math.floor(Math.random() * pool.length)];
-}
+const SYSTEM_PROMPT = `You are a sharp, friendly travel advisor running a Twitter/X account. You share concrete, genuinely useful travel advice drawn from a library of travel guides and destination pages at travelvient.com. Think experienced traveler who actually knows the costs, the routes, the fare rules, and the local quirks, not a tourism brochure.
 
-function pickBlogPost(posts: BlogPost[], recentTweets: ReturnType<typeof getRecentTweets>): BlogPost | null {
-  if (posts.length === 0) return null;
-
-  // Extract slugs recently tweeted about to avoid repetition
-  const recentlyCovered = new Set(
-    recentTweets
-      .filter((t) => t.blogSlug)
-      .map((t) => t.blogSlug)
-  );
-
-  const fresh = posts.filter((p) => !recentlyCovered.has(p.slug));
-  const pool = fresh.length > 0 ? fresh : posts;
-
-  // Weight newer posts more heavily
-  const weights = pool.map((_, i) => Math.max(1, pool.length - i));
-  const totalWeight = weights.reduce((a, b) => a + b, 0);
-  let rand = Math.random() * totalWeight;
-
-  for (let i = 0; i < pool.length; i++) {
-    rand -= weights[i];
-    if (rand <= 0) return pool[i];
-  }
-  return pool[0];
-}
-
-const SYSTEM_PROMPT = `You are the social media voice for Caden Sorenson, an indie developer at ${COMPANY_URL}. The motto: "We build tools people actually use."
-
-Brand voice: Authentic, curious, helpful, slightly irreverent. Never salesy or corporate. You're a solo dev building in public and sharing the journey — the code decisions, the weird bugs, the real lessons.
-
-About Vient Apps:
-- Indie software studio building mobile apps, websites, browser extensions, and web tools
-- Building in public with honest build logs, real code, no fluff
-- Tech stack: React Native, TypeScript, Next.js, Supabase, Expo, Firebase, Cloudflare, AI integrations
-- Website: ${COMPANY_URL}
-
-Products:
-- Roamly: Free AI-powered group trip planner at ${ROAMLY_URL}
-- Joke of the Day: Chrome extension with 4,600 installs delivering daily humor
-- Smoke or Fire: React Native multiplayer card game
-- SumTrails: Daily number-path puzzle game (React Native + Expo)
-
-Roamly details (for Roamly tweets):
-- ${ROAMLY_FEATURES.join("\n- ")}
-- Pricing: ${PRICING.free} | ${PRICING.plus} | ${PRICING.pro}
-- Style tags: ${STYLE_TAGS.join(", ")}
-- ${DESTINATIONS.length} curated destinations with full itineraries
-- Destination URLs: ${ROAMLY_URL}/destinations/{slug}
+Voice: practical, specific, a little opinionated. You give real recommendations and real numbers. You are NOT a brand mascot and you never talk about software, apps, "building in public," or any company. Naming third-party travel brands, airlines, cruise lines, gear, or products when the guide recommends them is encouraged, that is the actual advice.
 
 Content type guidelines:
-- roamly_feature: Highlight a specific Roamly feature or capability. Concrete, specific, not generic.
-- destination_highlight: Vivid take on a specific destination Roamly covers. Make it feel real, not tourism copy.
-- blog_new_post: Lead with a contrarian take or specific number pulled from the post (not just the title). Then give readers one thing they can act on right now. End with the post URL.
-- blog_insight: Name the insight with a number or a framework label (e.g. "The X rule", "3 reasons why"). Then hand the reader the takeaway as a concrete, usable rule or action they can apply today.
-- blog_tech: Open with a specific, counter-intuitive technical claim. Then give one command, pattern, or decision the reader can use immediately.
-- blog_engagement: Ask a pointed question framed around a number or named concept. Not rhetorical. Should make readers want to reply with their own answer.
+- guide_quick_answer: Distill the guide's quick answer into one punchy, specific tip the reader can use today.
+- guide_bullet_fact: Surface one striking fact, number, or rule from the guide (e.g. a fee, a size limit, a fare difference).
+- guide_faq: Answer one real traveler question crisply and specifically. The question can be implicit.
+- guide_engagement: Ask a pointed, non-rhetorical question seeded with a specific detail from the guide so people reply with their own take.
+- destination_spotlight: Give one vivid, specific reason this place is worth a trip. A concrete detail, not generic copy.
+- destination_budget: Lead with a real dollar figure or price gap, then one money-saving move.
+- destination_best_time: Name the best or worst window with a why (weather, crowds, an event), and make it timely to the season.
+- destination_culture: Share one non-obvious local custom or faux-pas to avoid, framed as practical respect.
+- destination_logistics: Give one practical hack: transport, where to stay, or a visa/water/safety fact.
+- destination_engagement: Ask a pointed question seeded with a specific detail about the destination.
 
-Growth strategy (building from zero followers, discoverability matters):
-- Include 2-3 relevant hashtags per tweet. Pick from: #indiehackers #buildinpublic #webdev #typescript #reactnative #nextjs #ai #solodev #saas #devlog #gamedev #chromeextension #indiedev
-- Choose hashtags that match the tweet topic
-- Hook the reader in the first few words. Don't start with filler.
-- Hot takes, specific numbers, relatable dev moments, and genuine questions outperform announcements.
+Growth strategy (discoverability matters):
+- Include 2-3 relevant hashtags per tweet. Pick from: ${TRAVEL_HASHTAGS.join(" ")}
+- Choose hashtags that match the tweet topic and destination.
+- Hook the reader in the first few words. No filler openings.
+- Specific numbers, surprising facts, strong recommendations, and genuine questions outperform vague tips.
 
 Rules:
-- Tweets MUST be under 280 characters. This is a hard limit. Account for hashtag length.
-- Include a link to the blog post URL (vientapps.com/blog/{slug}) for blog_new_post tweets. For others, only link when it adds real value.
-- Never repeat or closely paraphrase any tweet from the history provided
-- Vary your sentence structure and opening words
+- Tweets MUST be under 280 characters. This is a hard limit. Account for hashtag and URL length.
+- Only include the guide URL when instructed to, and use it exactly as given.
+- Never mention Roamly, Vient Apps, software, or "building in public." You are purely a travel advisor.
+- Never repeat or closely paraphrase any tweet from the history provided.
+- Vary your sentence structure and opening words.
 - Make it specific. Vague = boring. Specific = shareable.
-- For blog tweets: lead with a contrarian claim, a specific number, or a named framework. Then give the reader one immediately usable tool, tip, or decision. Every blog tweet = insight + action.
-- Occasionally use 1-2 relevant emojis, but don't overdo it
-- Never use em dashes
-- Keep it authentic, not corporate`;
+- Occasionally use 1-2 relevant emojis, but don't overdo it.
+- Never use em dashes.
+- Keep it authentic and useful, never salesy or corporate.`;
 
 export async function generateTweet(): Promise<GeneratedTweet> {
-  const contentType = pickContentType();
   const now = new Date();
   const season = getSeason(now);
   const seasonalContext = getSeasonalContext(season);
   const recentTweets = getRecentTweets(30);
   const dist = getContentTypeDistribution();
-  const blogPosts = loadBlogPosts();
+  const recentSlugs = getRecentDestinations();
 
-  let destinationContext = "";
-  let selectedDestination: (typeof DESTINATIONS)[0] | null = null;
-  let selectedPost: BlogPost | null = null;
+  const guides = loadGuides();
+  const destinations = loadDestinations();
 
-  if (contentType === "destination_highlight") {
-    selectedDestination = pickFreshDestination();
-    if (selectedDestination) {
-      destinationContext = `Destination: ${selectedDestination.name}\nDestination page: ${ROAMLY_URL}/destinations/${selectedDestination.slug}`;
+  // Choose source, falling back if the preferred one has no content.
+  let source = pickSource();
+  if (source === "guide" && guides.length === 0 && destinations.length > 0) {
+    source = "destination";
+  } else if (
+    source === "destination" &&
+    destinations.length === 0 &&
+    guides.length > 0
+  ) {
+    source = "guide";
+  }
+
+  const pool =
+    source === "guide" ? GUIDE_CONTENT_TYPES : DESTINATION_CONTENT_TYPES;
+  const contentType = pickContentType(pool);
+
+  let slug: string | undefined;
+  let sliceContext = "";
+
+  if (source === "guide") {
+    const guide = pickFreshGuide(guides, recentSlugs);
+    if (guide) {
+      slug = guide.slug;
+      sliceContext = extractGuideSlice(guide, contentType);
+    }
+  } else {
+    const dest = pickFreshDestination(destinations, recentSlugs);
+    if (dest) {
+      slug = dest.slug;
+      sliceContext = extractDestinationSlice(dest, contentType, season);
     }
   }
 
-  const isBlogType = (BLOG_CONTENT_TYPES as ContentType[]).includes(contentType);
-  if (isBlogType) {
-    selectedPost = pickBlogPost(blogPosts, recentTweets);
-  }
+  const includeLink = Math.random() < 0.5 && !!slug;
+  const linkInstruction = includeLink
+    ? "Include the guide URL above in the tweet (it adds value here)."
+    : "Do not include any URL in this tweet.";
 
   const historyBlock =
     recentTweets.length > 0
@@ -169,19 +146,13 @@ export async function generateTweet(): Promise<GeneratedTweet> {
     (type) => `${type}: ${dist[type] || 0}`
   ).join(", ");
 
-  let blogContext = "";
-  if (selectedPost) {
-    blogContext = `\nBlog post to draw from:\nTitle: "${selectedPost.title}"\nURL: https://vientapps.com/blog/${selectedPost.slug}\nPublished: ${selectedPost.pubDate}\nTags: ${selectedPost.tags.join(", ")}\nDescription: ${selectedPost.description}\n\nPost content:\n${selectedPost.excerpt}`;
-  } else if (isBlogType && blogPosts.length > 0) {
-    // Fallback: give all posts for context if no post was selected
-    blogContext = `\nAvailable blog posts:\n${formatPostsForPrompt(blogPosts)}`;
-  }
-
   const userPrompt = `Today is ${now.toISOString().split("T")[0]}. Season: ${season}.
 Seasonal context: ${seasonalContext}
 
 Content type to generate: ${contentType}
-${destinationContext}${blogContext}
+${sliceContext}
+
+${linkInstruction}
 
 Recent tweet history (DO NOT repeat or closely paraphrase any of these):
 ${historyBlock}
@@ -255,7 +226,7 @@ Generate exactly one tweet. Return ONLY the tweet text, nothing else. No quotes 
   return {
     content: tweet,
     contentType,
-    destination: selectedDestination?.slug,
-    blogSlug: selectedPost?.slug,
+    source,
+    slug,
   };
 }

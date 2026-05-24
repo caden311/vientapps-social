@@ -9,9 +9,9 @@ async function main() {
 
   console.log("Generating tweet...");
   const generated = await generateTweet();
+  console.log(`Source: ${generated.source}`);
   console.log(`Content type: ${generated.contentType}`);
-  if (generated.blogSlug) console.log(`Blog post: ${generated.blogSlug}`);
-  if (generated.destination) console.log(`Destination: ${generated.destination}`);
+  if (generated.slug) console.log(`Guide/destination: ${generated.slug}`);
   console.log(`Tweet: ${generated.content}`);
   console.log(`Length: ${generated.content.length}/280`);
 
@@ -31,8 +31,8 @@ async function main() {
     contentType: generated.contentType,
     postedAt: new Date().toISOString(),
     tweetId,
-    destination: generated.destination,
-    blogSlug: generated.blogSlug,
+    destination: generated.slug,
+    source: generated.source,
     season: getSeason(new Date()),
   });
 

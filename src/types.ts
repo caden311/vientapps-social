@@ -1,28 +1,26 @@
 export type Source = "guide" | "destination";
 
 export type ContentType =
-  // Guide bucket (~85%) — practical how-to / "best X for Y" travel guides
-  | "guide_quick_answer"
-  | "guide_bullet_fact"
-  | "guide_faq"
-  | "guide_engagement"
-  // Destination bucket (~15%) — rich place guides
-  | "destination_spotlight"
-  | "destination_budget"
-  | "destination_best_time"
-  | "destination_culture"
-  | "destination_logistics"
-  | "destination_engagement";
+  // Guides with a ranked product list -> "Top N" listicle thread
+  | "guide_listicle"
+  // Guides without products -> key-facts summary thread
+  | "guide_summary"
+  // Destination pages -> "things to know before you visit" thread
+  | "destination_summary";
 
 export interface TweetRecord {
   id: string;
+  /** The full thread, joined for storage and de-dup display. */
   content: string;
-  // Persisted history contains legacy content types (e.g. "indie_dev",
-  // "seasonal_content") from the old build-in-public bot, so reads stay loose.
+  // Persisted history contains legacy content types (e.g. "guide_faq",
+  // "indie_dev") from older versions of the bot, so reads stay loose.
   contentType: ContentType | string;
   postedAt: string;
+  /** Id of the first tweet in the thread. */
   tweetId?: string;
-  /** Slug of the guide or destination this tweet drew from (used for recency dedup). */
+  /** Number of tweets in the posted thread. */
+  tweetCount?: number;
+  /** Slug of the guide or destination this thread drew from (used for recency dedup). */
   destination?: string;
   source?: Source;
   /** @deprecated Legacy field from the old blog bot. No longer written. */
@@ -36,7 +34,8 @@ export interface TweetHistory {
 }
 
 export interface GeneratedTweet {
-  content: string;
+  /** 1-3 tweets, each under 280 chars, posted as a reply-chain thread. */
+  tweets: string[];
   contentType: ContentType;
   source: Source;
   slug?: string;

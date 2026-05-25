@@ -1,7 +1,6 @@
 import { readFileSync, readdirSync, existsSync } from "fs";
 import { join } from "path";
 import { parse as parseYaml } from "yaml";
-import { ContentType } from "./types";
 import { SITE_URL } from "./constants";
 
 export interface GuideFaq {
@@ -15,12 +14,21 @@ export interface GuideHowToStep {
   url?: string;
 }
 
+export interface RelatedProduct {
+  name: string;
+  url?: string;
+  description?: string;
+  rating?: number;
+  position?: number;
+}
+
 export interface Guide {
   slug: string;
   title: string;
   description: string;
   quickAnswer: string;
   quickAnswerBullets?: string[];
+  relatedProducts?: RelatedProduct[];
   faqs: GuideFaq[];
   howToSteps?: GuideHowToStep[];
   tags: string[];
@@ -64,8 +72,12 @@ export function loadGuides(): Guide[] {
     if (fm.draft === true) continue;
     // This is a travel bot, so skip the occasional non-travel guide.
     if (fm.category && fm.category !== "travel") continue;
-    // Need at least a quick answer to build a tweet from.
+    // Need at least a quick answer to build a thread from.
     if (!fm.quickAnswer) continue;
+
+    const products = (fm.relatedProducts as RelatedProduct[] | undefined)
+      ?.slice()
+      .sort((a, b) => (a.position ?? 99) - (b.position ?? 99));
 
     guides.push({
       slug: file.replace(/\.(mdx|md)$/, ""),
@@ -73,6 +85,7 @@ export function loadGuides(): Guide[] {
       description: (fm.description as string) || "",
       quickAnswer: fm.quickAnswer as string,
       quickAnswerBullets: fm.quickAnswerBullets as string[] | undefined,
+      relatedProducts: products,
       faqs: (fm.faqs as GuideFaq[]) || [],
       howToSteps: fm.howToSteps as GuideHowToStep[] | undefined,
       tags: (fm.tags as string[]) || [],
@@ -93,33 +106,55 @@ export function pickFreshGuide(
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
-function pick<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
+export type GuideLayout = "listicle" | "summary";
+
+export interface GuideContext {
+  layout: GuideLayout;
+  context: string;
 }
 
-/** Returns only the slice of a guide relevant to the chosen content type. */
-export function extractGuideSlice(guide: Guide, contentType: ContentType): string {
-  const header = `Topic: ${guide.title}\nGuide URL: ${SITE_URL}/guides/${guide.slug}`;
+/**
+ * Builds the full context a guide thread is written from. Guides with a ranked
+ * product list become a "Top N" listicle; the rest become a key-facts summary.
+ */
+export function buildGuideContext(guide: Guide): GuideContext {
+  const url = `${SITE_URL}/guides/${guide.slug}`;
+  const lines: string[] = [
+    `Topic: ${guide.title}`,
+    `Guide URL: ${url}`,
+    `Quick answer: ${truncate(guide.quickAnswer, 700)}`,
+  ];
 
-  switch (contentType) {
-    case "guide_bullet_fact": {
-      if (guide.quickAnswerBullets && guide.quickAnswerBullets.length > 0) {
-        return `${header}\n\nKey facts:\n- ${guide.quickAnswerBullets.join("\n- ")}`;
-      }
-      return `${header}\n\nQuick answer: ${truncate(guide.quickAnswer, 600)}`;
-    }
-    case "guide_faq": {
-      if (guide.faqs.length > 0) {
-        const faq = pick(guide.faqs);
-        return `${header}\n\nQuestion: ${faq.question}\nAnswer: ${truncate(faq.answer, 500)}`;
-      }
-      return `${header}\n\nQuick answer: ${truncate(guide.quickAnswer, 600)}`;
-    }
-    case "guide_engagement": {
-      return `${header}\n\nWhat this guide covers: ${guide.description}\nQuick answer: ${truncate(guide.quickAnswer, 400)}`;
-    }
-    case "guide_quick_answer":
-    default:
-      return `${header}\n\nQuick answer: ${truncate(guide.quickAnswer, 600)}`;
+  const hasProducts = !!(guide.relatedProducts && guide.relatedProducts.length);
+
+  if (hasProducts) {
+    const ranked = guide.relatedProducts!
+      .slice(0, 8)
+      .map((p, i) => {
+        const rating = p.rating ? ` (rated ${p.rating})` : "";
+        const desc = p.description ? `: ${truncate(p.description, 160)}` : "";
+        return `${p.position ?? i + 1}. ${p.name}${rating}${desc}`;
+      })
+      .join("\n");
+    lines.push(
+      `Ranked options (${guide.relatedProducts!.length} total, names only, NO @handles):\n${ranked}`
+    );
   }
+
+  if (guide.quickAnswerBullets && guide.quickAnswerBullets.length) {
+    lines.push(`Key facts:\n- ${guide.quickAnswerBullets.join("\n- ")}`);
+  }
+
+  if (guide.faqs.length) {
+    const faqs = guide.faqs
+      .slice(0, 3)
+      .map((f) => `Q: ${f.question}\nA: ${truncate(f.answer, 320)}`)
+      .join("\n\n");
+    lines.push(`Relevant FAQs:\n${faqs}`);
+  }
+
+  return {
+    layout: hasProducts ? "listicle" : "summary",
+    context: lines.join("\n\n"),
+  };
 }

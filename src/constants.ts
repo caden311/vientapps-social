@@ -24,28 +24,13 @@ export const TRAVEL_HASHTAGS = [
   "#familytravel",
 ];
 
-// Guide bucket (~85% of tweets), sourced from the MDX travel guides.
-export const GUIDE_CONTENT_TYPES: ContentType[] = [
-  "guide_quick_answer",
-  "guide_bullet_fact",
-  "guide_faq",
-  "guide_engagement",
-];
-
-// Destination bucket (~15% of tweets), sourced from the destination JSON.
-export const DESTINATION_CONTENT_TYPES: ContentType[] = [
-  "destination_spotlight",
-  "destination_budget",
-  "destination_best_time",
-  "destination_culture",
-  "destination_logistics",
-  "destination_engagement",
-];
-
-// Full set, used only for the distribution block shown to the model.
+// The three thread layouts. A guide's layout is determined by its data
+// (ranked product list -> listicle, otherwise summary); destinations always
+// use the destination layout. Used for the distribution block shown to the model.
 export const CONTENT_TYPES: ContentType[] = [
-  ...GUIDE_CONTENT_TYPES,
-  ...DESTINATION_CONTENT_TYPES,
+  "guide_listicle",
+  "guide_summary",
+  "destination_summary",
 ];
 
 export function getSeason(date: Date): string {

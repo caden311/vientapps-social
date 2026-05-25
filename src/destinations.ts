@@ -1,6 +1,5 @@
 import { readFileSync, readdirSync, existsSync } from "fs";
 import { join } from "path";
-import { ContentType } from "./types";
 import { SITE_URL } from "./constants";
 
 // Loose interface — only the fields the bot consumes. The real JSON has more.
@@ -114,68 +113,68 @@ export function pickFreshDestination(
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
-/** Returns only the slice of a destination guide relevant to the content type. */
-export function extractDestinationSlice(
+/**
+ * Builds the full context a destination thread is written from: a season-aware
+ * "things to know before you visit" brief covering the vibe, best time, a real
+ * cost figure, a cultural tip, and how to get around.
+ */
+export function buildDestinationContext(
   dest: Destination,
-  contentType: ContentType,
   season?: string
 ): string {
-  const header = `Destination: ${dest.destination}\nGuide URL: ${SITE_URL}/destinations/${dest.slug}`;
+  const url = `${SITE_URL}/destinations/${dest.slug}`;
+  const lines: string[] = [
+    `Destination: ${dest.destination} (${dest.city}, ${dest.country})`,
+    `Guide URL: ${url}`,
+  ];
 
-  switch (contentType) {
-    case "destination_budget": {
-      const c = dest.typicalCosts;
-      const perDay = `Per day (USD): budget $${c.budgetPerDayUsd ?? "?"}, midrange $${c.midrangePerDayUsd ?? "?"}, luxury $${c.luxuryPerDayUsd ?? "?"}`;
-      const rows = (c.breakdown || [])
-        .slice(0, 3)
-        .map((b) => `${b.category}: budget ${b.budgetUsd} / mid ${b.midrangeUsd} / luxury ${b.luxuryUsd}`)
-        .join("\n");
-      return `${header}\n\n${perDay}\nNotes: ${truncate(c.costNotes, 300)}\n${rows}`;
-    }
-    case "destination_best_time": {
-      const b = dest.bestTimeToVisit;
-      const match =
-        (season && dest.seasons?.find((s) => s.season?.toLowerCase() === season.toLowerCase())) ||
-        dest.seasons?.[0];
-      const seasonBlock = match
-        ? `\nCurrent season (${match.label}, ${match.months}): ${match.tempRangeF}, crowds ${match.crowdLevel}. Events: ${(match.notableEvents || []).slice(0, 2).join("; ")}`
-        : "";
-      return `${header}\n\nRecommended: ${b.recommended}\nPeak: ${b.peakSeason}\nBudget season: ${b.budgetSeason}${b.avoidPeriod ? `\nAvoid: ${b.avoidPeriod} (${b.avoidReason || ""})` : ""}${seasonBlock}`;
-    }
-    case "destination_culture": {
-      const tips = (dest.culturalTips || []).slice();
-      const chosen: string[] = [];
-      while (chosen.length < 2 && tips.length > 0) {
-        chosen.push(tips.splice(Math.floor(Math.random() * tips.length), 1)[0]);
-      }
-      return `${header}\n\nCultural tips:\n- ${chosen.join("\n- ")}\nTipping: ${truncate(dest.essentials?.tippingNorms || "", 200)}`;
-    }
-    case "destination_logistics": {
-      const angle = pick(["transport", "neighborhood", "essentials"]);
-      if (angle === "transport" && dest.gettingAround) {
-        const opts = (dest.gettingAround.options || [])
-          .filter((o) => o.recommended)
-          .slice(0, 2)
-          .map((o) => `${o.name} (${o.costIndicator}): ${o.tip || o.description}`)
-          .join("\n");
-        return `${header}\n\nGetting around: ${truncate(dest.gettingAround.overview, 250)}\n${opts}`;
-      }
-      if (angle === "neighborhood" && dest.neighborhoods?.length) {
-        const stay = dest.neighborhoods.filter((n) => n.stayHere);
-        const n = pick(stay.length ? stay : dest.neighborhoods);
-        return `${header}\n\nNeighborhood: ${n.name} (${n.vibeTag}). Best for: ${(n.bestFor || []).join(", ")}.\n${truncate(n.description, 250)}`;
-      }
-      const e = dest.essentials;
-      return `${header}\n\nEssentials: visa — ${truncate(e?.visaSummary || "", 200)}\nTap water safe: ${e?.tapWaterSafe}. Emergency: ${e?.emergencyNumber}. Drives on the ${e?.drivingSide}.`;
-    }
-    case "destination_engagement": {
-      const tip = dest.culturalTips?.length ? pick(dest.culturalTips) : "";
-      return `${header}\n\nQuick answer: ${truncate(dest.quickAnswer, 300)}\nCost notes: ${truncate(dest.typicalCosts?.costNotes || "", 200)}${tip ? `\nCultural note: ${tip}` : ""}`;
-    }
-    case "destination_spotlight":
-    default: {
-      const firstPara = (dest.overview || "").split(/\n\n+/)[0];
-      return `${header}\n\nOverview: ${truncate(firstPara, 500)}\nQuick answer: ${truncate(dest.quickAnswer, 300)}`;
-    }
+  const firstPara = (dest.overview || "").split(/\n\n+/)[0];
+  lines.push(`Overview: ${truncate(firstPara || dest.quickAnswer, 450)}`);
+
+  // Best time, biased to the current season when we have a match.
+  const b = dest.bestTimeToVisit;
+  if (b) {
+    const match =
+      (season &&
+        dest.seasons?.find(
+          (s) => s.season?.toLowerCase() === season.toLowerCase()
+        )) ||
+      dest.seasons?.[0];
+    const seasonBlock = match
+      ? ` Current season (${match.label}, ${match.months}): ${match.tempRangeF}, crowds ${match.crowdLevel}.${(match.notableEvents || []).length ? ` Events: ${(match.notableEvents || []).slice(0, 2).join("; ")}.` : ""}`
+      : "";
+    lines.push(
+      `Best time: recommended ${b.recommended}; peak ${b.peakSeason}; cheapest ${b.budgetSeason}.${b.avoidPeriod ? ` Avoid ${b.avoidPeriod} (${b.avoidReason || ""}).` : ""}${seasonBlock}`
+    );
   }
+
+  // A concrete cost figure.
+  const c = dest.typicalCosts;
+  if (c) {
+    lines.push(
+      `Typical cost per day (USD): budget $${c.budgetPerDayUsd ?? "?"}, midrange $${c.midrangePerDayUsd ?? "?"}, luxury $${c.luxuryPerDayUsd ?? "?"}. ${truncate(c.costNotes || "", 220)}`
+    );
+  }
+
+  // One cultural tip.
+  if (dest.culturalTips?.length) {
+    lines.push(`Cultural tip: ${pick(dest.culturalTips)}`);
+  }
+
+  // One recommended way to get around.
+  if (dest.gettingAround?.options?.length) {
+    const opts = dest.gettingAround.options.filter((o) => o.recommended);
+    const o = pick(opts.length ? opts : dest.gettingAround.options);
+    lines.push(`Getting around: ${o.name} (${o.costIndicator}): ${o.tip || o.description}`);
+  }
+
+  // One essential fact.
+  const e = dest.essentials;
+  if (e) {
+    lines.push(
+      `Essentials: ${e.currency}; tap water ${e.tapWaterSafe ? "safe" : "not safe"}; visa: ${truncate(e.visaSummary || "", 160)}`
+    );
+  }
+
+  return lines.join("\n\n");
 }

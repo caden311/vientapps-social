@@ -18,7 +18,6 @@ import { loadDestinations, pickFreshDestination, buildDestinationContext } from 
 const client = new Anthropic();
 
 const MODEL = "claude-sonnet-4-20250514";
-const MAX_TWEETS = 3;
 const TWEET_LIMIT = 280;
 // X wraps every link to a fixed-length t.co URL, so links count as ~23 chars.
 const URL_WEIGHT = 23;
@@ -34,81 +33,108 @@ function weightedLen(text: string): number {
 
 const SYSTEM_PROMPT = `You are a sharp, friendly travel advisor running a Twitter/X account. You share concrete, genuinely useful travel advice drawn from a library of travel guides and destination pages at travelvient.com. Think experienced traveler who actually knows the costs, the routes, the fare rules, and the local quirks, not a tourism brochure.
 
-Your job: turn ONE guide or destination into a short thread (1 to 3 tweets) that summarizes it usefully, in the spirit of this example:
+Your job: turn ONE guide or destination into a SINGLE concise tweet that summarizes it usefully and points the reader to the full guide for more, in the spirit of this example:
 
-Best eSIM Apps for Nomads in 2026 📞
-eSIM became essential because it lets you stay connected after landing, skip roaming fees, and manage multiple countries from one app.
-We tested dozens of options and ranked them on coverage, price per GB, flexibility, and real user sentiment.
-Top picks:
-1. Airalo
-2. Holafly
-3. Saily
-4. Nomad
-Quick take: Airalo for global coverage, Holafly for unlimited data, Saily for budget. Which would you pick?
+Best eSIM apps for nomads in 2026 📞
+We tested dozens on price, coverage & flexibility. Top 3: Airalo, Holafly, Saily.
+Full ranked list 👉 https://travelvient.com/guides/esim-apps-nomads
+#travel #digitalnomad
 
 Voice: practical, specific, a little opinionated. Real recommendations and real numbers. You are NOT a brand mascot and never talk about software, apps, "building in public," or any company. Naming the third-party travel brands, airlines, gear, or products the guide recommends is encouraged, that is the actual advice.
 
 Hard rules:
-- Output a thread of 1 to 3 tweets. Use only as many as the content needs: a single strong tweet is fine for a simple guide, but a ranked "Top N" list usually needs 2 or 3.
-- EVERY tweet must be UNDER 280 characters. A URL counts as 23 characters. This is a hard limit per tweet.
-- Put 2 to 3 relevant hashtags AND the guide/destination URL on the LAST tweet only. Use the URL exactly as given.
+- Output EXACTLY ONE tweet. Not a thread.
+- The tweet must be UNDER 280 characters. A URL counts as 23 characters. This is a hard limit.
+- Hook the reader in the first few words. Lead with a number, a surprising fact, or a strong claim, then summarize the guide in plain language.
+- Always end with a short "full guide" call to action and the URL given, exactly as given, then 2 to 3 relevant hashtags. Do NOT end with an engagement question.
 - Pick hashtags from: ${TRAVEL_HASHTAGS.join(" ")}. Match them to the topic.
 - When you reference testing or ranking, say "we tested" or "we researched". NEVER use a brand name, "@vientapps", or any @handle. List option NAMES only, never invent Twitter handles or links.
-- Hook the reader in the first few words of tweet 1. Lead with a number, a surprising fact, or a strong claim.
 - Make it specific. Vague = boring. Specific = shareable.
-- Use 1 to 2 relevant emojis across the thread, not more.
+- Use at most 1 relevant emoji.
 - Never mention Roamly, Vient Apps, software, or "building in public." You are purely a travel advisor.
 - Never repeat or closely paraphrase any tweet from the history provided.
 - Never use em dashes.
-- End the thread with a genuine, non-rhetorical engagement question.
 
-Output format: return ONLY a JSON array of strings, one string per tweet, in order. No prose, no keys, no markdown fences. Example: ["first tweet text", "second tweet text"]`;
+Output format: return ONLY the tweet text. No quotes, no JSON, no markdown fences, no preamble.`;
 
 function layoutGuidance(contentType: ContentType): string {
   switch (contentType) {
     case "guide_listicle":
-      return `Layout: ranked listicle thread (2 to 3 tweets).
-- Tweet 1: a hook title with 1 emoji, then 1 or 2 short lines on why this matters, then "We tested/researched the options on <2-3 criteria>:".
-- Then a numbered "Top picks:" list of the option NAMES only (no handles, no links). Condense to the top ~5 if needed so each tweet stays under 280.
-- Last tweet: a short "Quick take:" with 2 to 3 best-for one-liners (Name -> best for X), then the engagement question, then 2 to 3 hashtags and the URL.`;
+      return `Layout: ranked-list summary.
+- Open with a hook title and 1 emoji.
+- One short line on what was compared (e.g. "We tested dozens on price, coverage & flexibility.").
+- Tease the top 2 or 3 option NAMES inline (e.g. "Top 3: Airalo, Holafly, Saily.") so readers get a taste of the answer.
+- Close with "Full ranked list 👉 <url>" and 2 to 3 hashtags.`;
     case "guide_summary":
-      return `Layout: key-facts summary thread (1 to 3 tweets).
-- Tweet 1: a hook with 1 emoji, then the core answer in plain language.
-- Optional middle tweet: 2 to 4 key facts as short lines (use -> or -).
-- Last tweet: a one-line takeaway, the engagement question, then 2 to 3 hashtags and the URL.`;
+      return `Layout: key-facts summary.
+- Open with a hook and 1 emoji.
+- Give the core answer in one or two plain-language lines.
+- Close with "Full guide 👉 <url>" and 2 to 3 hashtags.`;
     case "destination_summary":
     default:
-      return `Layout: "things to know before you visit" thread (1 to 3 tweets).
-- Tweet 1: a hook with 1 emoji and the vibe / why go.
-- Optional middle tweet: best time to visit, a real cost number, a cultural tip, and how to get around (short lines).
-- Last tweet: a one-line takeaway, the engagement question, then 2 to 3 hashtags and the URL.`;
+      return `Layout: "things to know before you visit" summary.
+- Open with a hook and 1 emoji, capturing the vibe / why go.
+- Include one concrete fact: a real cost number or the best time to visit.
+- Close with "Full guide 👉 <url>" and 2 to 3 hashtags.`;
   }
 }
 
-function parseTweetArray(raw: string): string[] | null {
-  const start = raw.indexOf("[");
-  const end = raw.lastIndexOf("]");
-  if (start === -1 || end === -1 || end <= start) return null;
-  try {
-    const parsed = JSON.parse(raw.slice(start, end + 1));
-    if (!Array.isArray(parsed)) return null;
-    const tweets = parsed
-      .filter((t): t is string => typeof t === "string")
-      .map((t) => t.trim())
-      .filter((t) => t.length > 0);
-    return tweets.length ? tweets : null;
-  } catch {
-    return null;
+/** Strips surrounding quotes, markdown fences, and whitespace from the model's reply. */
+function cleanTweet(raw: string): string {
+  let text = raw.trim();
+  // Remove a wrapping markdown code fence if the model added one.
+  text = text.replace(/^```[a-z]*\n?/i, "").replace(/\n?```$/, "").trim();
+  // Strip a single pair of wrapping quotes.
+  if (
+    (text.startsWith('"') && text.endsWith('"')) ||
+    (text.startsWith("'") && text.endsWith("'"))
+  ) {
+    text = text.slice(1, -1).trim();
   }
+  return text;
 }
 
-function isValidThread(tweets: string[] | null): tweets is string[] {
-  return (
-    !!tweets &&
-    tweets.length >= 1 &&
-    tweets.length <= MAX_TWEETS &&
-    tweets.every((t) => weightedLen(t) <= TWEET_LIMIT)
-  );
+function isValidTweet(text: string, url: string): boolean {
+  return text.length > 0 && weightedLen(text) <= TWEET_LIMIT && text.includes(url);
+}
+
+/**
+ * Last-resort deterministic single tweet, used only when the model repeatedly
+ * fails to return a valid one. For a ranked listicle we rebuild a clean tweet
+ * from the guide's own option names; otherwise we trim the model's text and
+ * guarantee the CTA link and hashtags land on the end.
+ */
+function buildTweetFallback(
+  modelText: string,
+  contentType: ContentType,
+  options: string[],
+  url: string
+): string {
+  const tail = `\n\nFull guide 👉 ${url} #travel #traveltips`;
+  const room = TWEET_LIMIT - weightedLen(tail);
+
+  // The model's text minus any URL it already placed and minus a dangling CTA.
+  let lead = modelText
+    .split("\n")
+    .filter((line) => !/^https?:\/\//.test(line.trim()))
+    .join(" ")
+    .replace(/\b(full (guide|ranked list)|read more)\b.*$/i, "")
+    .trim();
+
+  if (contentType === "guide_listicle" && options.length >= 2) {
+    const picks = options.slice(0, 3).join(", ");
+    const teaser = `Top picks: ${picks}.`;
+    if (!lead) lead = "We compared the options so you don't have to.";
+    // Trim the lead so lead + teaser + tail all fit.
+    const fixed = ` ${teaser}`;
+    const leadRoom = room - fixed.length;
+    if (lead.length > leadRoom) lead = lead.slice(0, Math.max(0, leadRoom - 3)).trim() + "...";
+    return `${lead}${fixed}${tail}`;
+  }
+
+  if (!lead) lead = "A practical, no-fluff travel guide worth a read.";
+  if (lead.length > room) lead = lead.slice(0, Math.max(0, room - 3)).trim() + "...";
+  return `${lead}${tail}`;
 }
 
 export async function generateTweet(slugOverride?: string): Promise<GeneratedTweet> {
@@ -127,6 +153,8 @@ export async function generateTweet(slugOverride?: string): Promise<GeneratedTwe
   let slug: string | undefined;
   let contentType: ContentType;
   let context = "";
+  let url = "";
+  let options: string[] = [];
 
   // A --slug override (local testing) wins over the random pick.
   const overrideGuide = slugOverride
@@ -155,16 +183,20 @@ export async function generateTweet(slugOverride?: string): Promise<GeneratedTwe
 
   if (source === "guide") {
     const guide = overrideGuide || pickFreshGuide(guides, recentSlugs);
-    if (!guide) throw new Error("No guides available to build a thread from.");
+    if (!guide) throw new Error("No guides available to build a tweet from.");
     slug = guide.slug;
     const built = buildGuideContext(guide);
     context = built.context;
+    url = built.url;
+    options = built.options;
     contentType = built.layout === "listicle" ? "guide_listicle" : "guide_summary";
   } else {
     const dest = overrideDest || pickFreshDestination(destinations, recentSlugs);
-    if (!dest) throw new Error("No destinations available to build a thread from.");
+    if (!dest) throw new Error("No destinations available to build a tweet from.");
     slug = dest.slug;
-    context = buildDestinationContext(dest, season);
+    const built = buildDestinationContext(dest, season);
+    context = built.context;
+    url = built.url;
     contentType = "destination_summary";
   }
 
@@ -185,53 +217,42 @@ ${layoutGuidance(contentType)}
 Source material:
 ${context}
 
-Recent threads (DO NOT repeat or closely paraphrase any of these openers):
+Recent tweets (DO NOT repeat or closely paraphrase any of these):
 ${historyBlock}
 
 Layout counts in recent history: ${distBlock}
 
-Write the thread now. Return ONLY a JSON array of tweet strings.`;
+Write the single tweet now. It MUST be under 280 characters (URLs count as 23) and MUST end with the URL exactly as ${url} plus 2 to 3 hashtags. Return ONLY the tweet text.`;
 
-  let tweets = await requestThread(userPrompt);
+  let tweet = await requestTweet(userPrompt);
 
-  // One corrective retry if the model returned an invalid thread.
-  if (!isValidThread(tweets)) {
-    tweets = await requestThread(
-      userPrompt,
-      `Your previous reply was not a valid thread. Return ONLY a JSON array of 1 to ${MAX_TWEETS} strings, each UNDER 280 characters (URLs count as 23). Put the hashtags and the URL on the last string.`,
-      tweets ? JSON.stringify(tweets) : "(no parseable output)"
-    );
+  // Corrective retries if the model returned an invalid tweet (too long, or
+  // missing the link). Re-issuing a fresh, stronger prompt works far better than
+  // feeding the model its own bad reply, which just anchors it.
+  const correction = `${userPrompt}
+
+Your previous attempt was not valid. Return ONLY the tweet text, UNDER 280 characters (URLs count as 23), ending with the URL exactly as ${url} plus 2 to 3 hashtags. No engagement question.`;
+
+  for (let attempt = 0; attempt < 3 && !isValidTweet(tweet, url); attempt++) {
+    tweet = await requestTweet(correction);
   }
 
-  // Final fallback: keep only the tweets that fit, capped at MAX_TWEETS.
-  if (!isValidThread(tweets)) {
-    const safe = (tweets || [])
-      .filter((t) => weightedLen(t) <= TWEET_LIMIT)
-      .slice(0, MAX_TWEETS);
-    tweets = safe.length ? safe : [(tweets?.[0] || "").slice(0, 277).trim() + "..."];
+  // Final deterministic fallback if the model never produced a valid tweet.
+  if (!isValidTweet(tweet, url)) {
+    tweet = buildTweetFallback(tweet, contentType, options, url);
   }
 
-  return { tweets, contentType, source, slug };
+  return { content: tweet, contentType, source, slug };
 }
 
-async function requestThread(
-  userPrompt: string,
-  correction?: string,
-  priorReply?: string
-): Promise<string[] | null> {
-  const messages: Anthropic.MessageParam[] = [{ role: "user", content: userPrompt }];
-  if (correction && priorReply) {
-    messages.push({ role: "assistant", content: priorReply });
-    messages.push({ role: "user", content: correction });
-  }
-
+async function requestTweet(userPrompt: string): Promise<string> {
   const response = await client.messages.create({
     model: MODEL,
-    max_tokens: 800,
+    max_tokens: 300,
     system: SYSTEM_PROMPT,
-    messages,
+    messages: [{ role: "user", content: userPrompt }],
   });
 
   const text = response.content[0].type === "text" ? response.content[0].text : "";
-  return parseTweetArray(text);
+  return cleanTweet(text);
 }

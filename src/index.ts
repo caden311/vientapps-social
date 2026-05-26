@@ -13,15 +13,12 @@ async function main() {
   const slugArg = process.argv.find((a) => a.startsWith("--slug="));
   const slug = slugArg ? slugArg.split("=")[1] : undefined;
 
-  console.log("Generating thread...");
+  console.log("Generating tweet...");
   const generated = await generateTweet(slug);
   console.log(`Source: ${generated.source}`);
   console.log(`Layout: ${generated.contentType}`);
   if (generated.slug) console.log(`Guide/destination: ${generated.slug}`);
-  console.log(`Tweets: ${generated.tweets.length}`);
-  generated.tweets.forEach((t, i) => {
-    console.log(`\n--- Tweet ${i + 1} (${weightedLen(t)}/280) ---\n${t}`);
-  });
+  console.log(`\n--- Tweet (${weightedLen(generated.content)}/280) ---\n${generated.content}`);
 
   if (dryRun) {
     console.log("\nDry run, skipping post and history update.");
@@ -29,17 +26,16 @@ async function main() {
   }
 
   console.log("\nPosting to X...");
-  const tweetId = await postTweet(generated.tweets);
-  console.log(`Posted! First tweet ID: ${tweetId}`);
+  const tweetId = await postTweet(generated.content);
+  console.log(`Posted! Tweet ID: ${tweetId}`);
   console.log(`https://x.com/i/status/${tweetId}`);
 
   addTweet({
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    content: generated.tweets.join("\n\n---\n\n"),
+    content: generated.content,
     contentType: generated.contentType,
     postedAt: new Date().toISOString(),
     tweetId,
-    tweetCount: generated.tweets.length,
     destination: generated.slug,
     source: generated.source,
     season: getSeason(new Date()),

@@ -111,6 +111,10 @@ export type GuideLayout = "listicle" | "summary";
 export interface GuideContext {
   layout: GuideLayout;
   context: string;
+  url: string;
+  /** Ranked option names (listicles only), used to build a deterministic
+   * fallback thread if the model fails to produce a valid one. */
+  options: string[];
 }
 
 /**
@@ -156,5 +160,9 @@ export function buildGuideContext(guide: Guide): GuideContext {
   return {
     layout: hasProducts ? "listicle" : "summary",
     context: lines.join("\n\n"),
+    url,
+    options: hasProducts
+      ? guide.relatedProducts!.slice(0, 5).map((p) => p.name)
+      : [],
   };
 }

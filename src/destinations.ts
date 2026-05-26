@@ -121,7 +121,7 @@ export function pickFreshDestination(
 export function buildDestinationContext(
   dest: Destination,
   season?: string
-): string {
+): { context: string; url: string } {
   const url = `${SITE_URL}/destinations/${dest.slug}`;
   const lines: string[] = [
     `Destination: ${dest.destination} (${dest.city}, ${dest.country})`,
@@ -176,5 +176,5 @@ export function buildDestinationContext(
     );
   }
 
-  return lines.join("\n\n");
+  return { context: lines.join("\n\n"), url };
 }

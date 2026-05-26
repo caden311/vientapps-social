@@ -34,8 +34,8 @@ export interface TweetHistory {
 }
 
 export interface GeneratedTweet {
-  /** 1-3 tweets, each under 280 chars, posted as a reply-chain thread. */
-  tweets: string[];
+  /** A single tweet under 280 chars that summarizes the guide and links to it. */
+  content: string;
   contentType: ContentType;
   source: Source;
   slug?: string;

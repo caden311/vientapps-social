@@ -1,11 +1,11 @@
 export type Source = "guide" | "destination";
 
 export type ContentType =
-  // Guides with a ranked product list -> "Top N" listicle thread
+  // Guides with a ranked product list -> "Top N" ranked-list tweet
   | "guide_listicle"
-  // Guides without products -> key-facts summary thread
+  // Guides without products -> key-facts tweet
   | "guide_summary"
-  // Destination pages -> "things to know before you visit" thread
+  // Destination pages -> "things to know before you visit" tweet
   | "destination_summary";
 
 export interface TweetRecord {
@@ -23,6 +23,8 @@ export interface TweetRecord {
   /** Slug of the guide or destination this thread drew from (used for recency dedup). */
   destination?: string;
   source?: Source;
+  /** Whether this tweet carried the guide link. Missing/legacy tweets all had one. */
+  hasLink?: boolean;
   /** @deprecated Legacy field from the old blog bot. No longer written. */
   blogSlug?: string;
   season: string;
@@ -34,9 +36,11 @@ export interface TweetHistory {
 }
 
 export interface GeneratedTweet {
-  /** A single tweet under 280 chars that summarizes the guide and links to it. */
+  /** A single self-contained tweet under 280 chars; carries the guide link only when includeLink. */
   content: string;
   contentType: ContentType;
   source: Source;
   slug?: string;
+  /** Whether this tweet ended with the guide link (vs. value-only). */
+  includeLink: boolean;
 }

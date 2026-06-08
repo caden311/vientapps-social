@@ -39,6 +39,18 @@ export function getContentTypeDistribution(): Record<ContentType, number> {
   return counts as Record<ContentType, number>;
 }
 
+/**
+ * Fraction of the last `n` tweets that carried the guide link. Legacy tweets
+ * have no `hasLink` field and are counted as linked (every past tweet had one),
+ * so a fresh history reads as ~100% linked and generation steers downward.
+ */
+export function getRecentLinkRatio(n: number): number {
+  const recent = getRecentTweets(n);
+  if (recent.length === 0) return 1;
+  const linked = recent.filter((t) => t.hasLink !== false).length;
+  return linked / recent.length;
+}
+
 export function getRecentDestinations(): string[] {
   const history = readHistory();
   const thirtyDaysAgo = new Date();

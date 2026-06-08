@@ -17,6 +17,7 @@ async function main() {
   const generated = await generateTweet(slug);
   console.log(`Source: ${generated.source}`);
   console.log(`Layout: ${generated.contentType}`);
+  console.log(`Link: ${generated.includeLink ? "yes" : "no (value-only)"}`);
   if (generated.slug) console.log(`Guide/destination: ${generated.slug}`);
   console.log(`\n--- Tweet (${weightedLen(generated.content)}/280) ---\n${generated.content}`);
 
@@ -38,6 +39,7 @@ async function main() {
     tweetId,
     destination: generated.slug,
     source: generated.source,
+    hasLink: generated.includeLink,
     season: getSeason(new Date()),
   });
 

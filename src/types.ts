@@ -1,6 +1,8 @@
-export type Source = "guide" | "destination";
+export type Source = "post" | "guide" | "destination";
 
 export type ContentType =
+  // Vient build-log posts -> standalone build-in-public insight tweet
+  | "dev_insight"
   // Guides with a ranked product list -> "Top N" ranked-list tweet
   | "guide_listicle"
   // Guides without products -> key-facts tweet

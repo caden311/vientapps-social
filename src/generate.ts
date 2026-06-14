@@ -2,7 +2,10 @@ import Anthropic from "@anthropic-ai/sdk";
 import { GeneratedTweet, ContentType, Source } from "./types";
 import {
   TRAVEL_HASHTAGS,
+  DEV_HASHTAGS,
+  DEV_SOURCE_WEIGHT,
   GUIDE_SOURCE_WEIGHT,
+  DEV_SITE_URL,
   CONTENT_TYPES,
   LINK_INCLUSION_RATE,
   REPLY_INVITE_RATE,
@@ -21,6 +24,7 @@ import {
 } from "./history";
 import { loadGuides, pickFreshGuide, buildGuideContext } from "./guides";
 import { loadDestinations, pickFreshDestination, buildDestinationContext } from "./destinations";
+import { loadPosts, pickFreshPost, buildPostContext } from "./posts";
 
 const client = new Anthropic();
 
@@ -29,7 +33,12 @@ const TWEET_LIMIT = 280;
 // X wraps every link to a fixed-length t.co URL, so links count as ~23 chars.
 const URL_WEIGHT = 23;
 
+/**
+ * Pick the content source. Most tweets are dev/build-in-public posts; the
+ * minority fall to travel, split between guides and destinations.
+ */
 function pickSource(): Source {
+  if (Math.random() < DEV_SOURCE_WEIGHT) return "post";
   return Math.random() < GUIDE_SOURCE_WEIGHT ? "guide" : "destination";
 }
 
@@ -80,15 +89,47 @@ Hard rules:
 
 Output format: return ONLY the tweet text. No quotes, no JSON, no markdown fences, no preamble.`;
 
-/** The closing-line instruction, which depends on whether this tweet links out
- * and whether it should invite replies. */
-function closeGuidance(includeLink: boolean, inviteReply: boolean): string {
+const DEV_SYSTEM_PROMPT = `You are a solo indie developer running a Twitter/X account, building software in public. You share concrete, specific, hard-won lessons from actually shipping apps and client sites, not motivational fluff.
+
+Your job: write ONE tweet that delivers a genuinely useful build-in-public insight that stands completely on its own. The reader should get the full payoff right there in the tweet, no clicking required. Think "the single most useful thing I learned building this," packed with specifics, real tools, real tradeoffs, in the spirit of this example:
+
+Shipped 8 apps solo. The ones that got traction all did exactly ONE thing.
+Mic to Clipboard: one screen, one button. No accounts, no settings, no upsells.
+Every feature is a place a bug can live, and constraints force the work into the part that actually matters.
+
+Voice: practical, specific, a little opinionated. Real lessons, real numbers, real tradeoffs. Name the actual stack, tools, and services (Next.js, Astro, Cloudflare Workers, Supabase, Stripe, Claude, etc.) when they ARE the point, that is the useful part. You are a builder talking to other builders, not a brand mascot.
+
+Hard rules:
+- Output EXACTLY ONE tweet. Not a thread.
+- The tweet must be UNDER 280 characters. A URL counts as 23 characters. This is a hard limit.
+- Hook the reader in the first few words: lead with a number, a strong opinion, a counterintuitive lesson, a mistake you made, or a result. Then deliver the actual insight, not a teaser. NEVER write "read more to find out," "full post," or anything that withholds the payoff unless explicitly told to add a link.
+- Deliver complete, standalone value. A reader who never clicks anything should still walk away with something they can use, save, or argue with.
+- Hashtags: use AT MOST ONE, and only if it genuinely fits. Pick from: ${DEV_HASHTAGS.join(" ")}. Often the best choice is NO hashtag at all. Never stack hashtags.
+- Make it specific. Vague = boring. Specific = shareable. Concrete numbers, file counts, hours, dollar amounts, stack names beat adjectives.
+- Use at most 1 relevant emoji, and often none.
+- Never use a brand name as a handle or invent any @handle or link.
+- Never repeat or closely paraphrase any tweet from the history provided.
+- Never use em dashes.
+
+Output format: return ONLY the tweet text. No quotes, no JSON, no markdown fences, no preamble.`;
+
+/** The closing-line instruction, which depends on whether this tweet links out,
+ * whether it should invite replies, and whether it is a dev tweet (dev tweets
+ * use at most one optional hashtag; travel tweets use 2 to 3). */
+function closeGuidance(
+  includeLink: boolean,
+  inviteReply: boolean,
+  isDev: boolean
+): string {
+  const hashtagRule = isDev
+    ? "optionally ONE hashtag (often none)"
+    : "2 to 3 hashtags";
   if (includeLink) {
-    return `- Close with a short call to action and the URL given, exactly as given (e.g. "Full breakdown 👉 <url>"), then 2 to 3 hashtags. Do NOT end with a question.`;
+    return `- Close with a short call to action and the URL given, exactly as given (e.g. "Full breakdown 👉 <url>"), then ${hashtagRule}. Do NOT end with a question.`;
   }
   const tail = inviteReply
-    ? `- Do NOT include any link or URL. End with ONE genuine, specific question that invites the reader to share their own experience (not a generic "what's your favorite?"), then 2 to 3 hashtags.`
-    : `- Do NOT include any link or URL. End on the insight itself, then 2 to 3 hashtags.`;
+    ? `- Do NOT include any link or URL. End with ONE genuine, specific question that invites the reader to share their own experience (not a generic "what's your favorite?"), then ${hashtagRule}.`
+    : `- Do NOT include any link or URL. End on the insight itself, then ${hashtagRule}.`;
   return tail;
 }
 
@@ -97,8 +138,15 @@ function layoutGuidance(
   includeLink: boolean,
   inviteReply: boolean
 ): string {
-  const close = closeGuidance(includeLink, inviteReply);
+  const isDev = contentType === "dev_insight";
+  const close = closeGuidance(includeLink, inviteReply, isDev);
   switch (contentType) {
+    case "dev_insight":
+      return `Layout: standalone build-in-public insight, full value inline.
+- Open with a strong hook: a number, a result, a counterintuitive lesson, or a mistake you made.
+- Deliver the core lesson plus 1 or 2 concrete specifics (real stack names, file/feature counts, hours, dollars, a tradeoff). The reader should not need to click anything.
+- Sound like a builder talking to builders, not a press release.
+${close}`;
     case "guide_listicle":
       return `Layout: ranked list, full value inline. Keep the WHOLE tweet to about 230 characters, never over 280. Counting matters here; favor fewer words.
 - One tight hook line with 1 emoji (a number or surprising fact). Skip "after testing X on Y" if it costs space.
@@ -134,13 +182,29 @@ function cleanTweet(raw: string): string {
   return text;
 }
 
-function isValidTweet(text: string, url: string, includeLink: boolean): boolean {
+function isValidTweet(
+  text: string,
+  url: string,
+  includeLink: boolean,
+  isDev: boolean
+): boolean {
   if (text.length === 0 || weightedLen(text) > TWEET_LIMIT) return false;
-  // Every tweet must close with hashtags; nothing else enforces this.
-  if (!/#\w/.test(text)) return false;
+  const hashtagCount = (text.match(/#\w+/g) || []).length;
+  if (isDev) {
+    // Dev tweets use at most one hashtag (often none); a stack is spammy on dev X.
+    if (hashtagCount > 1) return false;
+  } else {
+    // Travel tweets must close with hashtags; nothing else enforces this.
+    if (hashtagCount === 0) return false;
+  }
   if (includeLink) return text.includes(url);
-  // Value-only tweets must not sneak a link back in.
-  return !/https?:\/\//.test(text) && !text.toLowerCase().includes("travelvient.com");
+  // Value-only tweets must not sneak a link back in (either site).
+  const lower = text.toLowerCase();
+  return (
+    !/https?:\/\//.test(text) &&
+    !lower.includes("travelvient.com") &&
+    !lower.includes("vient.org")
+  );
 }
 
 /**
@@ -154,13 +218,19 @@ function buildTweetFallback(
   contentType: ContentType,
   options: string[],
   url: string,
-  includeLink: boolean
+  includeLink: boolean,
+  isDev: boolean
 ): string {
-  const linkTail = `\n\nFull guide 👉 ${url} #travel #traveltips`;
+  // Dev tweets keep hashtags to zero in the last-resort path (the prompt allows
+  // at most one, and a canned tag would be noise); travel keeps its two tags.
+  const linkTail = isDev
+    ? `\n\nFull writeup 👉 ${url}`
+    : `\n\nFull guide 👉 ${url} #travel #traveltips`;
   // A canned question would be generic by definition, which is exactly what the
   // prompt tells the model to avoid, so the value-only fallback just ends on
-  // hashtags. inviteReply only shapes the model prompt, not this last resort.
-  const valueTail = `\n\n#travel #traveltips`;
+  // the lead (dev) or hashtags (travel). inviteReply only shapes the model
+  // prompt, not this last resort.
+  const valueTail = isDev ? `` : `\n\n#travel #traveltips`;
   const tail = includeLink ? linkTail : valueTail;
   const room = TWEET_LIMIT - weightedLen(tail);
 
@@ -192,7 +262,11 @@ function buildTweetFallback(
     .replace(/\b(full (guide|ranked list|breakdown)|read more)\b.*$/i, "")
     .trim();
 
-  if (!lead) lead = "A practical, no-fluff travel tip worth knowing.";
+  if (!lead) {
+    lead = isDev
+      ? "A practical, no-fluff lesson from shipping software solo."
+      : "A practical, no-fluff travel tip worth knowing.";
+  }
   if (lead.length > room) lead = lead.slice(0, Math.max(0, room - 3)).trim() + "...";
   return `${lead}${tail}`;
 }
@@ -209,10 +283,12 @@ export async function generateTweet(slugOverride?: string): Promise<GeneratedTwe
   const includeLink = pickIncludeLink();
   const inviteReply = !includeLink && Math.random() < REPLY_INVITE_RATE;
 
+  const posts = loadPosts();
   const guides = loadGuides();
   const destinations = loadDestinations();
+  const hasTravel = guides.length > 0 || destinations.length > 0;
 
-  // Resolve source + the specific guide/destination.
+  // Resolve source + the specific post/guide/destination.
   let source: Source = pickSource();
   let slug: string | undefined;
   let contentType: ContentType;
@@ -221,6 +297,9 @@ export async function generateTweet(slugOverride?: string): Promise<GeneratedTwe
   let options: string[] = [];
 
   // A --slug override (local testing) wins over the random pick.
+  const overridePost = slugOverride
+    ? posts.find((p) => p.slug === slugOverride)
+    : undefined;
   const overrideGuide = slugOverride
     ? guides.find((g) => g.slug === slugOverride)
     : undefined;
@@ -228,13 +307,21 @@ export async function generateTweet(slugOverride?: string): Promise<GeneratedTwe
     ? destinations.find((d) => d.slug === slugOverride)
     : undefined;
 
-  if (overrideGuide) {
+  if (overridePost) {
+    source = "post";
+  } else if (overrideGuide) {
     source = "guide";
   } else if (overrideDest) {
     source = "destination";
   } else {
     // Fall back if the preferred source has no content.
-    if (source === "guide" && guides.length === 0 && destinations.length > 0) {
+    if (source === "post" && posts.length === 0 && hasTravel) {
+      // No dev posts but travel exists: pick a travel source.
+      source = guides.length > 0 ? "guide" : "destination";
+    } else if (source !== "post" && !hasTravel && posts.length > 0) {
+      // No travel content but dev posts exist.
+      source = "post";
+    } else if (source === "guide" && guides.length === 0 && destinations.length > 0) {
       source = "destination";
     } else if (
       source === "destination" &&
@@ -245,7 +332,15 @@ export async function generateTweet(slugOverride?: string): Promise<GeneratedTwe
     }
   }
 
-  if (source === "guide") {
+  if (source === "post") {
+    const post = overridePost || pickFreshPost(posts, recentSlugs);
+    if (!post) throw new Error("No posts available to build a tweet from.");
+    slug = post.slug;
+    const built = buildPostContext(post);
+    context = built.context;
+    url = built.url;
+    contentType = "dev_insight";
+  } else if (source === "guide") {
     const guide = overrideGuide || pickFreshGuide(guides, recentSlugs);
     if (!guide) throw new Error("No guides available to build a tweet from.");
     slug = guide.slug;
@@ -273,12 +368,19 @@ export async function generateTweet(slugOverride?: string): Promise<GeneratedTwe
 
   const distBlock = CONTENT_TYPES.map((type) => `${type}: ${dist[type] || 0}`).join(", ");
 
+  const isDev = source === "post";
+  const hashtagRule = isDev ? "at most one optional hashtag" : "2 to 3 hashtags";
   const closeRule = includeLink
-    ? `It MUST end with the URL exactly as ${url} plus 2 to 3 hashtags.`
-    : `It MUST NOT contain any link or URL. End with ${inviteReply ? "one genuine, specific question then" : "the insight then"} 2 to 3 hashtags.`;
+    ? `It MUST end with the URL exactly as ${url} plus ${hashtagRule}.`
+    : `It MUST NOT contain any link or URL. End with ${inviteReply ? "one genuine, specific question then" : "the insight then"} ${hashtagRule}.`;
 
-  const userPrompt = `Today is ${now.toISOString().split("T")[0]}. Season: ${season}.
-Seasonal context: ${seasonalContext}
+  // Seasonal framing only matters for travel; dev insights are season-agnostic.
+  const dateBlock = isDev
+    ? `Today is ${now.toISOString().split("T")[0]}.`
+    : `Today is ${now.toISOString().split("T")[0]}. Season: ${season}.
+Seasonal context: ${seasonalContext}`;
+
+  const userPrompt = `${dateBlock}
 
 ${layoutGuidance(contentType, includeLink, inviteReply)}
 
@@ -292,7 +394,9 @@ Layout counts in recent history: ${distBlock}
 
 Write the single tweet now. It MUST be under 280 characters (URLs count as 23). ${closeRule} Deliver the full payoff inline, no teasing. Return ONLY the tweet text.`;
 
-  let tweet = await requestTweet(userPrompt);
+  const systemPrompt = isDev ? DEV_SYSTEM_PROMPT : SYSTEM_PROMPT;
+
+  let tweet = await requestTweet(userPrompt, systemPrompt);
 
   // Corrective retries if the model returned an invalid tweet (too long, or the
   // link rule was broken). Re-issuing a fresh, stronger prompt works far better
@@ -301,23 +405,23 @@ Write the single tweet now. It MUST be under 280 characters (URLs count as 23). 
 
 Your previous attempt was not valid. Return ONLY the tweet text, UNDER 280 characters (URLs count as 23). ${closeRule}`;
 
-  for (let attempt = 0; attempt < 3 && !isValidTweet(tweet, url, includeLink); attempt++) {
-    tweet = await requestTweet(correction);
+  for (let attempt = 0; attempt < 3 && !isValidTweet(tweet, url, includeLink, isDev); attempt++) {
+    tweet = await requestTweet(correction, systemPrompt);
   }
 
   // Final deterministic fallback if the model never produced a valid tweet.
-  if (!isValidTweet(tweet, url, includeLink)) {
-    tweet = buildTweetFallback(tweet, contentType, options, url, includeLink);
+  if (!isValidTweet(tweet, url, includeLink, isDev)) {
+    tweet = buildTweetFallback(tweet, contentType, options, url, includeLink, isDev);
   }
 
   return { content: tweet, contentType, source, slug, includeLink };
 }
 
-async function requestTweet(userPrompt: string): Promise<string> {
+async function requestTweet(userPrompt: string, systemPrompt: string): Promise<string> {
   const response = await client.messages.create({
     model: MODEL,
     max_tokens: 300,
-    system: SYSTEM_PROMPT,
+    system: systemPrompt,
     messages: [{ role: "user", content: userPrompt }],
   });
 

@@ -3,7 +3,14 @@ import { ContentType } from "./types";
 // Public site where the travel guides and destination pages live.
 export const SITE_URL = "https://travelvient.com";
 
-// Share of tweets drawn from the practical travel guides vs. destination pages.
+// Public site where the dev / build-in-public blog posts live.
+export const DEV_SITE_URL = "https://vient.org";
+
+// Share of tweets that are dev/build-in-public posts. The rest fall to travel
+// content, split between guides and destinations by GUIDE_SOURCE_WEIGHT.
+export const DEV_SOURCE_WEIGHT = 0.8;
+
+// Share of travel tweets drawn from the practical guides vs. destination pages.
 export const GUIDE_SOURCE_WEIGHT = 0.85;
 
 // Most tweets stand alone with no link (X downranks outbound links). Only a
@@ -41,10 +48,22 @@ export const TRAVEL_HASHTAGS = [
   "#familytravel",
 ];
 
-// The three thread layouts. A guide's layout is determined by its data
+// Dev hashtags. Dev X treats hashtag stacks as spam, so a dev tweet uses AT
+// MOST ONE of these, and only when it fits naturally (often none at all).
+export const DEV_HASHTAGS = [
+  "#buildinpublic",
+  "#indiehackers",
+  "#webdev",
+  "#devlog",
+  "#SaaS",
+  "#coding",
+];
+
+// The thread layouts. A guide's layout is determined by its data
 // (ranked product list -> listicle, otherwise summary); destinations always
 // use the destination layout. Used for the distribution block shown to the model.
 export const CONTENT_TYPES: ContentType[] = [
+  "dev_insight",
   "guide_listicle",
   "guide_summary",
   "destination_summary",

@@ -76,7 +76,7 @@ Voice: practical, specific, a little opinionated. Real recommendations and real 
 
 Hard rules:
 - Output EXACTLY ONE tweet. Not a thread.
-- The tweet must be UNDER 280 characters. A URL counts as 23 characters. This is a hard limit.
+- Aim for 230 to 250 characters; the tweet must NEVER exceed 280. A URL counts as 23 characters. This is a hard limit, and going over means the tweet gets cut off mid-sentence, so leave yourself a buffer.
 - Hook the reader in the first few words: lead with a number, a surprising fact, a cost shock, a myth-bust, or a strong claim. Then deliver the actual answer, not a teaser. NEVER write "read more to find out," "full guide," or anything that withholds the payoff unless explicitly told to add a link.
 - Deliver complete, standalone value. A reader who never clicks anything should still walk away with something they can use or save.
 - Pick hashtags from: ${TRAVEL_HASHTAGS.join(" ")}. Match them to the topic.
@@ -101,7 +101,7 @@ Voice: practical, specific, a little opinionated. Real lessons, real numbers, re
 
 Hard rules:
 - Output EXACTLY ONE tweet. Not a thread.
-- The tweet must be UNDER 280 characters. A URL counts as 23 characters. This is a hard limit.
+- Aim for 230 to 250 characters; the tweet must NEVER exceed 280. A URL counts as 23 characters. This is a hard limit, and going over means the tweet gets cut off mid-sentence, so leave yourself a buffer.
 - Hook the reader in the first few words: lead with a number, a strong opinion, a counterintuitive lesson, a mistake you made, or a result. Then deliver the actual insight, not a teaser. NEVER write "read more to find out," "full post," or anything that withholds the payoff unless explicitly told to add a link.
 - Deliver complete, standalone value. A reader who never clicks anything should still walk away with something they can use, save, or argue with.
 - Hashtags: use AT MOST ONE, and only if it genuinely fits. Pick from: ${DEV_HASHTAGS.join(" ")}. Often the best choice is NO hashtag at all. Never stack hashtags.
@@ -267,7 +267,19 @@ function buildTweetFallback(
       ? "A practical, no-fluff lesson from shipping software solo."
       : "A practical, no-fluff travel tip worth knowing.";
   }
-  if (lead.length > room) lead = lead.slice(0, Math.max(0, room - 3)).trim() + "...";
+  if (lead.length > room) {
+    // Never cut mid-word: trim to a whole word inside the budget (leaving room
+    // for a one-char ellipsis), then prefer to end on the last sentence boundary
+    // so the tweet reads as finished rather than a jarring "...se" cut. Only
+    // ellipsize when no usable sentence end remains in the kept text.
+    lead = lead.slice(0, Math.max(0, room - 1)).replace(/\s+\S*$/, "").trim();
+    const lastSentenceEnd = lead.search(/[.!?](?=[^.!?]*$)/);
+    if (lastSentenceEnd >= room * 0.5) {
+      lead = lead.slice(0, lastSentenceEnd + 1).trim();
+    } else {
+      lead = lead.replace(/[\s,;:.\-]+$/, "") + "…";
+    }
+  }
   return `${lead}${tail}`;
 }
 
@@ -392,7 +404,7 @@ ${historyBlock}
 
 Layout counts in recent history: ${distBlock}
 
-Write the single tweet now. It MUST be under 280 characters (URLs count as 23). ${closeRule} Deliver the full payoff inline, no teasing. Return ONLY the tweet text.`;
+Write the single tweet now. Aim for 230 to 250 characters and NEVER exceed 280 (URLs count as 23); going over gets the tweet cut off, so leave a buffer. ${closeRule} Deliver the full payoff inline, no teasing. Return ONLY the tweet text.`;
 
   const systemPrompt = isDev ? DEV_SYSTEM_PROMPT : SYSTEM_PROMPT;
 
@@ -403,7 +415,7 @@ Write the single tweet now. It MUST be under 280 characters (URLs count as 23). 
   // than feeding the model its own bad reply, which just anchors it.
   const correction = `${userPrompt}
 
-Your previous attempt was not valid. Return ONLY the tweet text, UNDER 280 characters (URLs count as 23). ${closeRule}`;
+Your previous attempt was not valid (likely too long). Return ONLY the tweet text, aim for 230 to 250 characters and NEVER over 280 (URLs count as 23). ${closeRule}`;
 
   for (let attempt = 0; attempt < 3 && !isValidTweet(tweet, url, includeLink, isDev); attempt++) {
     tweet = await requestTweet(correction, systemPrompt);

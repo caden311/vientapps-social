@@ -28,7 +28,7 @@ import { loadPosts, pickFreshPost, buildPostContext } from "./posts";
 
 const client = new Anthropic();
 
-const MODEL = "claude-sonnet-4-20250514";
+const MODEL = "claude-sonnet-4-6";
 const TWEET_LIMIT = 280;
 // X wraps every link to a fixed-length t.co URL, so links count as ~23 chars.
 const URL_WEIGHT = 23;

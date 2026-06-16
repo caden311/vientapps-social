@@ -682,7 +682,18 @@
       "source": "guide",
       "hasLink": false,
       "season": "summer"
+    },
+    {
+      "id": "1781636081618-kx8irq",
+      "content": "Gave Claude Design full creative control (\"decide for me\" on all 6 questions). It built a 3-canvas world map: 23 rotated ellipses for continents, quadratic Bezier flight arcs, prefers-reduced-motion baked in. Lesson: constraints beat blank-slate freedom, and budget a second se...",
+      "contentType": "dev_insight",
+      "postedAt": "2026-06-16T18:54:41.618Z",
+      "tweetId": "2066957653650117038",
+      "destination": "designing-homepage-hero-with-claude",
+      "source": "post",
+      "hasLink": false,
+      "season": "summer"
     }
   ],
-  "lastUpdated": "2026-06-13T16:13:13.864Z"
+  "lastUpdated": "2026-06-16T18:54:41.618Z"
 }

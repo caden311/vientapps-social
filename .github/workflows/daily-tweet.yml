@@ -13,24 +13,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Checkout travel blog
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: caden311/blog
           path: blog
           token: ${{ secrets.BLOG_READ_TOKEN }}
 
       - name: Checkout vient (dev blog)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: caden311/vient
           path: vient
           token: ${{ secrets.BLOG_READ_TOKEN }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '20'
           cache: 'npm'

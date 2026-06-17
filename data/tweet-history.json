@@ -693,7 +693,18 @@
       "source": "post",
       "hasLink": false,
       "season": "summer"
+    },
+    {
+      "id": "1781718544506-pc1xa5",
+      "content": "Built a TypeScript CLI that turns a text script into a finished YouTube Short for $0.30-0.60. Claude splits scenes, Fal/Kling generates video, ElevenLabs narrates, Whisper syncs subs, FFmpeg assembles. Biggest trap: brew FFmpeg ships without libass. #buildinpublic",
+      "contentType": "dev_insight",
+      "postedAt": "2026-06-17T17:49:04.506Z",
+      "tweetId": "2067303527739793534",
+      "destination": "generating-youtube-shorts-with-ai",
+      "source": "post",
+      "hasLink": false,
+      "season": "summer"
     }
   ],
-  "lastUpdated": "2026-06-16T18:54:41.618Z"
+  "lastUpdated": "2026-06-17T17:49:04.506Z"
 }

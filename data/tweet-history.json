@@ -715,7 +715,18 @@
       "source": "post",
       "hasLink": false,
       "season": "summer"
+    },
+    {
+      "id": "1781889565381-qrnte5",
+      "content": "App Store paperwork ate a full day more than the actual build. Privacy manifest, encryption declaration, permission strings, screenshots. Lesson: take screenshots during dev, not at submission. Did App Store review kill your launch momentum too? #buildinpublic",
+      "contentType": "dev_insight",
+      "postedAt": "2026-06-19T17:19:25.381Z",
+      "tweetId": "2068020841556660383",
+      "destination": "building-mic-clipboard",
+      "source": "post",
+      "hasLink": false,
+      "season": "summer"
     }
   ],
-  "lastUpdated": "2026-06-18T17:58:28.993Z"
+  "lastUpdated": "2026-06-19T17:19:25.381Z"
 }

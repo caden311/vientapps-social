@@ -737,7 +737,18 @@
       "source": "destination",
       "hasLink": false,
       "season": "summer"
+    },
+    {
+      "id": "1782060305884-9c7zkj",
+      "content": "Built a WoW Classic addon to auto-invite portal buyers. Hardest part wasn't invites, it was pattern matching: Lua has no word boundaries, so %f[%a]port%f[%A] stops 'airport' firing. Trade chat defaults off; too many false positives. Full breakdown 👉 https://vient.org/blog/building-mage-portals",
+      "contentType": "dev_insight",
+      "postedAt": "2026-06-21T16:45:05.884Z",
+      "tweetId": "2068736979014127748",
+      "destination": "building-mage-portals",
+      "source": "post",
+      "hasLink": true,
+      "season": "summer"
     }
   ],
-  "lastUpdated": "2026-06-20T16:17:44.056Z"
+  "lastUpdated": "2026-06-21T16:45:05.884Z"
 }

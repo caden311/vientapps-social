@@ -748,7 +748,18 @@
       "source": "post",
       "hasLink": true,
       "season": "summer"
+    },
+    {
+      "id": "1782153957159-5u8y0t",
+      "content": "Opened Bloons TD, closed it before playing because 6 modals blocked the map. Now I only build one-feature apps: no accounts, no settings, no upsells. Ships in a weekend, zero onboarding, tiny bug surface. Add feature 2 when feature 1 stops being enough. #buildinpublic",
+      "contentType": "dev_insight",
+      "postedAt": "2026-06-22T18:45:57.159Z",
+      "tweetId": "2069129780973212112",
+      "destination": "only-building-dead-simple-apps",
+      "source": "post",
+      "hasLink": false,
+      "season": "summer"
     }
   ],
-  "lastUpdated": "2026-06-21T16:45:05.884Z"
+  "lastUpdated": "2026-06-22T18:45:57.159Z"
 }

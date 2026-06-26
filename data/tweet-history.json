@@ -792,7 +792,18 @@
       "source": "guide",
       "hasLink": true,
       "season": "summer"
+    },
+    {
+      "id": "1782493226718-kpxfth",
+      "content": "First version of my travel adapter tool dumped all 15 plug types and voltage data at once. Unusable. Fix: bold verdict first, details behind a collapsible. Claude one-shotted the 221-country JSON. Hierarchy before code, always.",
+      "contentType": "dev_insight",
+      "postedAt": "2026-06-26T17:00:26.718Z",
+      "tweetId": "2070552780675129545",
+      "destination": "building-plug-finder",
+      "source": "post",
+      "hasLink": false,
+      "season": "summer"
     }
   ],
-  "lastUpdated": "2026-06-25T17:11:52.123Z"
+  "lastUpdated": "2026-06-26T17:00:26.718Z"
 }

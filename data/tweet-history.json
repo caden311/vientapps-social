@@ -803,7 +803,18 @@
       "source": "post",
       "hasLink": false,
       "season": "summer"
+    },
+    {
+      "id": "1782576260726-v95vyb",
+      "content": "4,600 installs, zero marketing. Just an SEO-optimized Chrome Web Store listing.  MV3 gotcha: call ExtensionPay's startBackground() at the top level of your service worker, not only in onInstalled. Workers are ephemeral; restarts skip onInstalled entirely.",
+      "contentType": "dev_insight",
+      "postedAt": "2026-06-27T16:04:20.726Z",
+      "tweetId": "2070901050593194146",
+      "destination": "building-joke-of-the-day",
+      "source": "post",
+      "hasLink": false,
+      "season": "summer"
     }
   ],
-  "lastUpdated": "2026-06-26T17:00:26.718Z"
+  "lastUpdated": "2026-06-27T16:04:20.727Z"
 }

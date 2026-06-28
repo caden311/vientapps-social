@@ -814,7 +814,18 @@
       "source": "post",
       "hasLink": false,
       "season": "summer"
+    },
+    {
+      "id": "1782663008060-zxd3rq",
+      "content": "Built PackSmart: AI packing lists with real weather, no signup. Hardest lesson: Claude Haiku 4.5 output needs JSON sanitization + Zod validation, AND a deterministic fallback. The fallback doesn't count against the 3/day limit. Full breakdown 👉 https://vient.org/blog/building-packsmart",
+      "contentType": "dev_insight",
+      "postedAt": "2026-06-28T16:10:08.060Z",
+      "tweetId": "2071264894859575346",
+      "destination": "building-packsmart",
+      "source": "post",
+      "hasLink": true,
+      "season": "summer"
     }
   ],
-  "lastUpdated": "2026-06-27T16:04:20.727Z"
+  "lastUpdated": "2026-06-28T16:10:08.060Z"
 }
